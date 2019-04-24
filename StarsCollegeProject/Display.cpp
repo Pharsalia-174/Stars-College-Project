@@ -18,9 +18,9 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 	bool flag = false;
 	bool flag2 = false;
 	//	cleardevice(); 清屏重画 暂时不知道是否用得到
-	//这一部分是把点到棋盘内的像素转化为格子
-	while (ver >= X_START_LENGTH && hor >= Y_START_LENGTH && ver <= (X_START_LENGTH + 11 * DEFAULT_BLOCK_SIZE) && hor <= (Y_START_LENGTH + 11 * DEFAULT_BLOCK_SIZE)) { //将鼠标点到的像素化为鼠标点到的格子
-		if (ver <= (X_START_LENGTH + DEFAULT_BLOCK_SIZE) && hor <= (Y_START_LENGTH + DEFAULT_BLOCK_SIZE)) {
+	//这一部分是把点到棋盘内的像素转化为格子 ←
+	while (ver >= X_START_LENGTH && hor >= Y_START_LENGTH && ver <= (X_START_LENGTH + 10 * DEFAULT_BLOCK_SIZE) && hor <= (Y_START_LENGTH + 10 * DEFAULT_BLOCK_SIZE)) { //将鼠标点到的像素化为鼠标点到的格子
+		if (ver <= (X_START_LENGTH + DEFAULT_BLOCK_SIZE) && hor <= (Y_START_LENGTH + DEFAULT_BLOCK_SIZE)) {//
 			flag = true;
 			break;
 		}
@@ -104,19 +104,15 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 	//这一部分是初始化格子
 	for (int i = 0; i <= 9; i++) {
 		for (int j = 0; j <= 9; j++) {
-			setrop2(R2_BLACK);
-			rectangle(X_START_LENGTH + i * DEFAULT_BLOCK_SIZE, Y_START_LENGTH + j * DEFAULT_BLOCK_SIZE, X_START_LENGTH + (i + 1) * DEFAULT_BLOCK_SIZE, Y_START_LENGTH + (j + 1) * DEFAULT_BLOCK_SIZE);
+			drawBlankCell(i, j);
 		}
 	}
 	//这一部分是初始化均不可见的迷雾
 	for (int i = 0; i <= 9; i++) {
 		for (int j = 0; j <= 9; j++) {
 			if (vb[i][j] == 0) {
-				setrop2(R2_BLACK);
-				rectangle(X_START_LENGTH + i * DEFAULT_BLOCK_SIZE, Y_START_LENGTH + j * DEFAULT_BLOCK_SIZE, X_START_LENGTH + (i + 1) * DEFAULT_BLOCK_SIZE, Y_START_LENGTH + (j + 1) * DEFAULT_BLOCK_SIZE);
-				setfillcolor(RGB(96, 96, 96));
-				setrop2(R2_COPYPEN);
-				solidrectangle((X_START_LENGTH + COLOR_BLOCK_SHRINK_SIZE) + i * DEFAULT_BLOCK_SIZE, (Y_START_LENGTH + COLOR_BLOCK_SHRINK_SIZE) + j * DEFAULT_BLOCK_SIZE, (X_START_LENGTH - COLOR_BLOCK_SHRINK_SIZE) + (i + 1) * DEFAULT_BLOCK_SIZE, (Y_START_LENGTH - COLOR_BLOCK_SHRINK_SIZE) + (j + 1) * DEFAULT_BLOCK_SIZE);
+				drawBlankCell(i, j);
+				drawFillCell(i, j, LIGHTGRAY);
 			}
 		}
 	}
@@ -127,18 +123,12 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 		for (int i = 0; i <= 9; i++) {
 			for (int j = 0; j <= 9; j++) {
 				if ((vb[i][j] == 1 || vb[i][j] == 3)) {
-					setrop2(R2_BLACK);
-					rectangle(X_START_LENGTH + i * DEFAULT_BLOCK_SIZE, Y_START_LENGTH + j * DEFAULT_BLOCK_SIZE, X_START_LENGTH + (i + 1) * DEFAULT_BLOCK_SIZE, Y_START_LENGTH + (j + 1) * DEFAULT_BLOCK_SIZE);
-					setfillcolor(RGB(255, 255, 255));
-					setrop2(R2_COPYPEN);
-					solidrectangle((X_START_LENGTH + COLOR_BLOCK_SHRINK_SIZE) + i * DEFAULT_BLOCK_SIZE, (Y_START_LENGTH + COLOR_BLOCK_SHRINK_SIZE) + j * DEFAULT_BLOCK_SIZE, (X_START_LENGTH - COLOR_BLOCK_SHRINK_SIZE) + (i + 1) * DEFAULT_BLOCK_SIZE, (Y_START_LENGTH - COLOR_BLOCK_SHRINK_SIZE) + (j + 1) * DEFAULT_BLOCK_SIZE);
+					drawBlankCell(i, j);
+					drawFillCell(i, j, 255, 255, 255);
 				}
 				else if (vb[i][j] == 2) {
-					setrop2(R2_BLACK);
-					rectangle(X_START_LENGTH + i * DEFAULT_BLOCK_SIZE, Y_START_LENGTH + j * DEFAULT_BLOCK_SIZE, X_START_LENGTH + (i + 1) * DEFAULT_BLOCK_SIZE, Y_START_LENGTH + (j + 1) * DEFAULT_BLOCK_SIZE);
-					setfillcolor(RGB(96, 96, 96));
-					setrop2(R2_COPYPEN);
-					solidrectangle((X_START_LENGTH + COLOR_BLOCK_SHRINK_SIZE) + i * DEFAULT_BLOCK_SIZE, (Y_START_LENGTH + COLOR_BLOCK_SHRINK_SIZE) + j * DEFAULT_BLOCK_SIZE, (X_START_LENGTH - COLOR_BLOCK_SHRINK_SIZE) + (i + 1) * DEFAULT_BLOCK_SIZE, (Y_START_LENGTH - COLOR_BLOCK_SHRINK_SIZE) + (j + 1) * DEFAULT_BLOCK_SIZE);
+					drawBlankCell(i, j);
+					drawFillCell(i, j, LIGHTGRAY);
 				}
 			}
 		}
@@ -146,20 +136,14 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 		for (int i = 0; i <= 9; i++) {
 			for (int j = 0; j <= 9; j++) {
 				if ((cb[i][j] != nullptr) && (cb[i][j]->getTeam() == 1) && ((vb[i][j] == 1) || (vb[i][j] == 3))) {
-					setrop2(R2_BLACK);
-					rectangle(X_START_LENGTH + i * DEFAULT_BLOCK_SIZE, Y_START_LENGTH + j * DEFAULT_BLOCK_SIZE, X_START_LENGTH + (i + 1) * DEFAULT_BLOCK_SIZE, Y_START_LENGTH + (j + 1) * DEFAULT_BLOCK_SIZE);
+					drawBlankCell(i, j);
 					//接下来暂时用一个涂色的圆代表棋子
-					setfillcolor(BLUE);
-					setrop2(R2_COPYPEN);
-					fillcircle((X_START_LENGTH + (i  * DEFAULT_BLOCK_SIZE) + 0.5*DEFAULT_BLOCK_SIZE), (Y_START_LENGTH + (j  * DEFAULT_BLOCK_SIZE) + 0.5*DEFAULT_BLOCK_SIZE), 0.5*DEFAULT_BLOCK_SIZE - COLOR_BLOCK_SHRINK_SIZE);
+					drawFillCircle(i, j, BLUE);
 				}
 				else if (((cb[i][j] != nullptr)) && ((cb[i][j]->getTeam() == 2)) && (vb[i][j] == 3)) {
-					setrop2(R2_BLACK);
-					rectangle(X_START_LENGTH + i * DEFAULT_BLOCK_SIZE, Y_START_LENGTH + j * DEFAULT_BLOCK_SIZE, X_START_LENGTH + (i + 1) * DEFAULT_BLOCK_SIZE, Y_START_LENGTH + (j + 1) * DEFAULT_BLOCK_SIZE);
+					drawBlankCell(i, j);
 					//接下来暂时用一个涂色的圆代表棋子
-					setfillcolor(BLACK);
-					setrop2(R2_COPYPEN);
-					fillcircle((X_START_LENGTH + (i  * DEFAULT_BLOCK_SIZE) + 0.5*DEFAULT_BLOCK_SIZE), (Y_START_LENGTH + (j  * DEFAULT_BLOCK_SIZE) + 0.5*DEFAULT_BLOCK_SIZE), 0.5*DEFAULT_BLOCK_SIZE - COLOR_BLOCK_SHRINK_SIZE);
+					drawFillCircle(i, j, BLACK);
 				}
 			}
 		}
@@ -169,18 +153,12 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 		for (int i = 0; i <= 9; i++) {
 			for (int j = 0; j <= 9; j++) {
 				if ((vb[i][j] == 2 || vb[i][j] == 3)) {
-					setrop2(R2_BLACK);
-					rectangle(X_START_LENGTH + i * DEFAULT_BLOCK_SIZE, Y_START_LENGTH + j * DEFAULT_BLOCK_SIZE, X_START_LENGTH + (i + 1) * DEFAULT_BLOCK_SIZE, Y_START_LENGTH + (j + 1) * DEFAULT_BLOCK_SIZE);
-					setfillcolor(RGB(255, 255, 255));
-					setrop2(R2_COPYPEN);
-					solidrectangle((X_START_LENGTH + COLOR_BLOCK_SHRINK_SIZE) + i * DEFAULT_BLOCK_SIZE, (Y_START_LENGTH + COLOR_BLOCK_SHRINK_SIZE) + j * DEFAULT_BLOCK_SIZE, (X_START_LENGTH - COLOR_BLOCK_SHRINK_SIZE) + (i + 1) * DEFAULT_BLOCK_SIZE, (Y_START_LENGTH - COLOR_BLOCK_SHRINK_SIZE) + (j + 1) * DEFAULT_BLOCK_SIZE);
+					drawBlankCell(i, j);
+					drawFillCell(i, j, 255, 255, 255);
 				}
 				else if (vb[i][j] == 1) {
-					setrop2(R2_BLACK);
-					rectangle(X_START_LENGTH + i * DEFAULT_BLOCK_SIZE, Y_START_LENGTH + j * DEFAULT_BLOCK_SIZE, X_START_LENGTH + (i + 1) * DEFAULT_BLOCK_SIZE, Y_START_LENGTH + (j + 1) * DEFAULT_BLOCK_SIZE);
-					setfillcolor(RGB(96, 96, 96));
-					setrop2(R2_COPYPEN);
-					solidrectangle((X_START_LENGTH + COLOR_BLOCK_SHRINK_SIZE) + i * DEFAULT_BLOCK_SIZE, (Y_START_LENGTH + COLOR_BLOCK_SHRINK_SIZE) + j * DEFAULT_BLOCK_SIZE, (X_START_LENGTH - COLOR_BLOCK_SHRINK_SIZE) + (i + 1) * DEFAULT_BLOCK_SIZE, (Y_START_LENGTH - COLOR_BLOCK_SHRINK_SIZE) + (j + 1) * DEFAULT_BLOCK_SIZE);
+					drawBlankCell(i, j);
+					drawFillCell(i, j, LIGHTGRAY);
 				}
 			}
 		}
@@ -188,20 +166,14 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 		for (int i = 0; i <= 9; i++) {
 			for (int j = 0; j <= 9; j++) {
 				if ((cb[i][j] != nullptr) && (cb[i][j]->getTeam() == 2) && ((vb[i][j] == 2) || (vb[i][j] == 3))) {
-					setrop2(R2_BLACK);
-					rectangle(X_START_LENGTH + i * DEFAULT_BLOCK_SIZE, Y_START_LENGTH + j * DEFAULT_BLOCK_SIZE, X_START_LENGTH + (i + 1) * DEFAULT_BLOCK_SIZE, Y_START_LENGTH + (j + 1) * DEFAULT_BLOCK_SIZE);
+					drawBlankCell(i, j);
 					//接下来暂时用一个涂色的圆代表棋子
-					setfillcolor(BLACK);
-					setrop2(R2_COPYPEN);
-					fillcircle((X_START_LENGTH + (i  * DEFAULT_BLOCK_SIZE) + 0.5*DEFAULT_BLOCK_SIZE), (Y_START_LENGTH + (j  * DEFAULT_BLOCK_SIZE) + 0.5*DEFAULT_BLOCK_SIZE), 0.5*DEFAULT_BLOCK_SIZE - COLOR_BLOCK_SHRINK_SIZE);
+					drawFillCircle(i, j, BLACK);
 				}
 				else if (((cb[i][j] != nullptr)) && ((cb[i][j]->getTeam() == 1)) && (vb[i][j] == 3)) {
-					setrop2(R2_BLACK);
-					rectangle(X_START_LENGTH + i * DEFAULT_BLOCK_SIZE, Y_START_LENGTH + j * DEFAULT_BLOCK_SIZE, X_START_LENGTH + (i + 1) * DEFAULT_BLOCK_SIZE, Y_START_LENGTH + (j + 1) * DEFAULT_BLOCK_SIZE);
+					drawBlankCell(i, j);
 					//接下来暂时用一个涂色的圆代表棋子
-					setfillcolor(BLUE);
-					setrop2(R2_COPYPEN);
-					fillcircle((X_START_LENGTH + (i  * DEFAULT_BLOCK_SIZE) + 0.5*DEFAULT_BLOCK_SIZE), (Y_START_LENGTH + (j  * DEFAULT_BLOCK_SIZE) + 0.5*DEFAULT_BLOCK_SIZE), 0.5*DEFAULT_BLOCK_SIZE - COLOR_BLOCK_SHRINK_SIZE);
+					drawFillCircle(i, j, BLUE);
 				}
 			}
 		}
@@ -230,9 +202,55 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 				case WM_LBUTTONDOWN:
 					mouseCurrentX = m.x;
 					mouseCurrentY = m.y;
-					drawBoard(mouseCurrentX, mouseCurrentY, currentTeam);
+					std::cout << m.x << "," << m.y << std::endl;
+					std::cout<<pixelToCell(m.x, m.y).getX()<<","<<pixelToCell(m.x, m.y).getY()<<std::endl;
+					//drawBoard(mouseCurrentX, mouseCurrentY, currentTeam);
 					break;
 				}
 			}
 		}
+}
+void Display::drawBlankCell(int i, int j) {
+	setrop2(R2_BLACK);
+	rectangle(X_START_LENGTH + i * DEFAULT_BLOCK_SIZE, Y_START_LENGTH + j * DEFAULT_BLOCK_SIZE, X_START_LENGTH + (i + 1) * DEFAULT_BLOCK_SIZE, Y_START_LENGTH + (j + 1) * DEFAULT_BLOCK_SIZE);
+}
+void Display::drawFillCell(int i, int j, COLORREF x) {
+	setfillcolor(x);
+	setrop2(R2_COPYPEN);
+	solidrectangle((X_START_LENGTH + COLOR_BLOCK_SHRINK_SIZE) + i * DEFAULT_BLOCK_SIZE, (Y_START_LENGTH + COLOR_BLOCK_SHRINK_SIZE) + j * DEFAULT_BLOCK_SIZE, (X_START_LENGTH - COLOR_BLOCK_SHRINK_SIZE) + (i + 1) * DEFAULT_BLOCK_SIZE, (Y_START_LENGTH - COLOR_BLOCK_SHRINK_SIZE) + (j + 1) * DEFAULT_BLOCK_SIZE);
+}
+void Display::drawFillCell(int i,int j,int R,int G,int B) {
+	setfillcolor(RGB(R,G,B));
+	setrop2(R2_COPYPEN);
+	solidrectangle((X_START_LENGTH + COLOR_BLOCK_SHRINK_SIZE) + i * DEFAULT_BLOCK_SIZE, (Y_START_LENGTH + COLOR_BLOCK_SHRINK_SIZE) + j * DEFAULT_BLOCK_SIZE, (X_START_LENGTH - COLOR_BLOCK_SHRINK_SIZE) + (i + 1) * DEFAULT_BLOCK_SIZE, (Y_START_LENGTH - COLOR_BLOCK_SHRINK_SIZE) + (j + 1) * DEFAULT_BLOCK_SIZE);
+}
+void Display::drawFillCircle(int i, int j, COLORREF x){
+	setfillcolor(x);
+	setrop2(R2_COPYPEN);
+	fillcircle((X_START_LENGTH + (i  * DEFAULT_BLOCK_SIZE) + 0.5*DEFAULT_BLOCK_SIZE), (Y_START_LENGTH + (j  * DEFAULT_BLOCK_SIZE) + 0.5*DEFAULT_BLOCK_SIZE), 0.5*DEFAULT_BLOCK_SIZE - COLOR_BLOCK_SHRINK_SIZE);
+}
+void Display::drawFillCircle(int i, int j, int R, int G, int B){
+	setfillcolor(RGB(R,G,B));
+	setrop2(R2_COPYPEN);
+	fillcircle((X_START_LENGTH + (i  * DEFAULT_BLOCK_SIZE) + 0.5*DEFAULT_BLOCK_SIZE), (Y_START_LENGTH + (j  * DEFAULT_BLOCK_SIZE) + 0.5*DEFAULT_BLOCK_SIZE), 0.5*DEFAULT_BLOCK_SIZE - COLOR_BLOCK_SHRINK_SIZE);
+}
+Point Display::pixelToCell(int ver, int hor) {
+	int x = 0, y = 0;
+	if ((ver >= X_START_LENGTH) && (hor >= Y_START_LENGTH) && (ver <= (X_START_LENGTH + 10 * (DEFAULT_BLOCK_SIZE))) && (hor <= (Y_START_LENGTH + 10 * (DEFAULT_BLOCK_SIZE)))) {
+		while (ver >= X_START_LENGTH + DEFAULT_BLOCK_SIZE) {
+			ver -= DEFAULT_BLOCK_SIZE;
+			x++;
+		}
+		while (hor >= Y_START_LENGTH + DEFAULT_BLOCK_SIZE) {
+			hor -= DEFAULT_BLOCK_SIZE;
+			y++;
+		}
+		Point p(x, y);
+		return p;
+	}
+	else {
+		Point p;
+		return p;
+	}
+	
 }

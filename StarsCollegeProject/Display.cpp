@@ -6,7 +6,7 @@
 RECT fullScreenRect = { 0,0,1280,960 };//制造一个大小为窗口大小的矩形
 MOUSEMSG m;		// 定义鼠标消息
 int mouseCurrentX, mouseCurrentY; //重新绘图时使用的参数，确定鼠标位置
-int previousBlockX = 65535, previousBlockY = 65535;
+int previousBlockX = 100, previousBlockY = 100;
 Display::Display(){}
 Display::~Display(){}
 
@@ -16,28 +16,20 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 	int **vb = battleSystem.getVisibleBoard();//存放棋盘可见范围
 	int xBlock = 0, yBlock = 0;//本次传入的点击坐标所代表的格子数
 	bool flag = false;
-	bool flag2 = false;
 	//	cleardevice(); 清屏重画 暂时不知道是否用得到
-	//这一部分是把点到棋盘内的像素转化为格子 ←
-	while (ver >= X_START_LENGTH && hor >= Y_START_LENGTH && ver <= (X_START_LENGTH + 10 * DEFAULT_BLOCK_SIZE) && hor <= (Y_START_LENGTH + 10 * DEFAULT_BLOCK_SIZE)) { //将鼠标点到的像素化为鼠标点到的格子
-		if (ver <= (X_START_LENGTH + DEFAULT_BLOCK_SIZE) && hor <= (Y_START_LENGTH + DEFAULT_BLOCK_SIZE)) {//
-			flag = true;
-			break;
-		}
-		while (ver >= (X_START_LENGTH + DEFAULT_BLOCK_SIZE)) {
-			ver -= DEFAULT_BLOCK_SIZE;
-			xBlock++;
-		}while (hor >= (Y_START_LENGTH + DEFAULT_BLOCK_SIZE)) {
-			hor -= DEFAULT_BLOCK_SIZE;
-			yBlock++;
-		}
-	}
+	//这一部分是把点到棋盘内的像素转化为格子 
+	xBlock = pixelToCell(ver, hor).getX();
+	yBlock = pixelToCell(ver, hor).getY();
+	int changedX = (xBlock - previousBlockX), changedY = (yBlock - previousBlockY);//记录改变量
+	std::cout << changedX << "," << changedY << std::endl;
 	//识别改变棋子位置的操作(暂时没有考虑godmove的情况)     →  糨糊  ←  目前发现的问题：左上角附近的棋子会变得很奇怪
-	if (((abs(xBlock - previousBlockX) == 0 || abs(xBlock - previousBlockX) == 1) && (abs(yBlock - previousBlockY) == 0 || abs(yBlock - previousBlockY) == 1)) && (cb[previousBlockX][previousBlockY] != nullptr)) {
-		int changedX = (xBlock - previousBlockX), changedY = (yBlock - previousBlockY);//记录改变量
-		flag2 = true;
+	if ((((abs(changedX) == 0) || (abs(changedX) == 1)) && ((abs(changedY) == 0) || (abs(changedY) == 1))) && (cb[previousBlockX][previousBlockY] != nullptr)) {
+		flag = true;
 		if (changedX == 0) {
-			if (changedY == 0);
+			if (changedY == 0) {
+				previousBlockX = xBlock;
+				previousBlockY = yBlock;
+			}
 			else if (changedY == 1) {
 				cb[previousBlockX][previousBlockY]->moveMob(2);
 				previousBlockX = xBlock;
@@ -97,7 +89,7 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 		flag2 = true;
 	}*/
 	//如果没有动过棋子的话则传入新点这一次的参数并且不动棋子  ←说的啥玩意
-	if (!flag2) {
+	if (!flag) {
 		previousBlockX = xBlock;
 		previousBlockY = yBlock;
 	}
@@ -202,9 +194,9 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 				case WM_LBUTTONDOWN:
 					mouseCurrentX = m.x;
 					mouseCurrentY = m.y;
-					std::cout << m.x << "," << m.y << std::endl;
-					std::cout<<pixelToCell(m.x, m.y).getX()<<","<<pixelToCell(m.x, m.y).getY()<<std::endl;
-					//drawBoard(mouseCurrentX, mouseCurrentY, currentTeam);
+					//std::cout << m.x << "," << m.y << std::endl;
+					//std::cout<<pixelToCell(m.x, m.y).getX()<<","<<pixelToCell(m.x, m.y).getY()<<std::endl;
+					drawBoard(mouseCurrentX, mouseCurrentY, currentTeam);
 					break;
 				}
 			}

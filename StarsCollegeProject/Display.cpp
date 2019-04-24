@@ -6,7 +6,7 @@
 RECT fullScreenRect = { 0,0,1280,960 };//制造一个大小为窗口大小的矩形
 MOUSEMSG m;		// 定义鼠标消息
 int mouseCurrentX, mouseCurrentY; //重新绘图时使用的参数，确定鼠标位置
-int previousBlockX = 100, previousBlockY = 100;
+int previousBlockX = 200, previousBlockY = 200;
 Display::Display(){}
 Display::~Display(){}
 
@@ -16,71 +16,73 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 	int **vb = battleSystem.getVisibleBoard();//存放棋盘可见范围
 	int xBlock = 0, yBlock = 0;//本次传入的点击坐标所代表的格子数
 	bool flag = false;
-	//	cleardevice(); 清屏重画 暂时不知道是否用得到
+	//cleardevice(); //清屏重画 暂时不知道是否用得到
 	//这一部分是把点到棋盘内的像素转化为格子 
-	xBlock = pixelToCell(ver, hor).getX();
-	yBlock = pixelToCell(ver, hor).getY();
+	int *temp = pixelToCell(ver,hor);
+	xBlock = temp[0];
+	yBlock = temp[1];
 	int changedX = (xBlock - previousBlockX), changedY = (yBlock - previousBlockY);//记录改变量
-	std::cout << changedX << "," << changedY << std::endl;
 	//识别改变棋子位置的操作(暂时没有考虑godmove的情况)     →  糨糊  ←  目前发现的问题：左上角附近的棋子会变得很奇怪
-	if ((((abs(changedX) == 0) || (abs(changedX) == 1)) && ((abs(changedY) == 0) || (abs(changedY) == 1))) && (cb[previousBlockX][previousBlockY] != nullptr)) {
-		flag = true;
-		if (changedX == 0) {
-			if (changedY == 0) {
-				previousBlockX = xBlock;
-				previousBlockY = yBlock;
+	if (previousBlockX >= 0 && previousBlockY >= 0 && previousBlockX <= 9 && previousBlockY <= 9) {
+		if ((((abs(changedX) == 0) || (abs(changedX) == 1)) && ((abs(changedY) == 0) || (abs(changedY) == 1))) && (cb[previousBlockX][previousBlockY] != nullptr)) {
+			flag = true;
+			if (changedX == 0) {
+				if (changedY == 0) {
+					previousBlockX = xBlock;
+					previousBlockY = yBlock;
+				}
+				else if (changedY == 1) {
+					cb[previousBlockX][previousBlockY]->moveMob(2);
+					previousBlockX = xBlock;
+					previousBlockY = yBlock;
+					drawBoard(-100, -100, currentTeam);
+				}
+				else if (changedY == -1) {
+					cb[previousBlockX][previousBlockY]->moveMob(8);
+					previousBlockX = xBlock;
+					previousBlockY = yBlock;
+					drawBoard(-100, -100, currentTeam);
+				}
 			}
-			else if (changedY == 1) {
-				cb[previousBlockX][previousBlockY]->moveMob(2);
-				previousBlockX = xBlock;
-				previousBlockY = yBlock;
-				drawBoard(-1, -1, currentTeam);
+			else if (changedX == 1) {
+				if (changedY == 0) {
+					cb[previousBlockX][previousBlockY]->moveMob(6);
+					previousBlockX = xBlock;
+					previousBlockY = yBlock;
+					drawBoard(-100, -100, currentTeam);
+				}
+				else if (changedY == 1) {
+					cb[previousBlockX][previousBlockY]->moveMob(3);
+					previousBlockX = xBlock;
+					previousBlockY = yBlock;
+					drawBoard(-100, -100, currentTeam);
+				}
+				else if (changedY == -1) {
+					cb[previousBlockX][previousBlockY]->moveMob(9);
+					previousBlockX = xBlock;
+					previousBlockY = yBlock;
+					drawBoard(-100, -100, currentTeam);
+				}
 			}
-			else if (changedY == -1) {
-				cb[previousBlockX][previousBlockY]->moveMob(8);
-				previousBlockX = xBlock;
-				previousBlockY = yBlock;
-				drawBoard(-1, -1, currentTeam);
-			}
-		}
-		else if (changedX == 1) {
-			if (changedY == 0) {
-				cb[previousBlockX][previousBlockY]->moveMob(6);
-				previousBlockX = xBlock;
-				previousBlockY = yBlock;
-				drawBoard(-1, -1, currentTeam);
-			}
-			else if (changedY == 1) {
-				cb[previousBlockX][previousBlockY]->moveMob(3);
-				previousBlockX = xBlock;
-				previousBlockY = yBlock;
-				drawBoard(-1, -1, currentTeam);
-			}
-			else if (changedY == -1) {
-				cb[previousBlockX][previousBlockY]->moveMob(9);
-				previousBlockX = xBlock;
-				previousBlockY = yBlock;
-				drawBoard(-1, -1, currentTeam);
-			}
-		}
-		else if (changedX == -1) {
-			if (changedY == 0) {
-				cb[previousBlockX][previousBlockY]->moveMob(4);
-				previousBlockX = xBlock;
-				previousBlockY = yBlock;
-				drawBoard(-1, -1, currentTeam);
-			}
-			else if (changedY == 1) {
-				cb[previousBlockX][previousBlockY]->moveMob(1);
-				previousBlockX = xBlock;
-				previousBlockY = yBlock;
-				drawBoard(-1, -1, currentTeam);
-			}
-			else if (changedY == -1) {
-				cb[previousBlockX][previousBlockY]->moveMob(7);
-				previousBlockX = xBlock;
-				previousBlockY = yBlock;
-				drawBoard(-1, -1, currentTeam);
+			else if (changedX == -1) {
+				if (changedY == 0) {
+					cb[previousBlockX][previousBlockY]->moveMob(4);
+					previousBlockX = xBlock;
+					previousBlockY = yBlock;
+					drawBoard(-100, -100, currentTeam);
+				}
+				else if (changedY == 1) {
+					cb[previousBlockX][previousBlockY]->moveMob(1);
+					previousBlockX = xBlock;
+					previousBlockY = yBlock;
+					drawBoard(-100, -100, currentTeam);
+				}
+				else if (changedY == -1) {
+					cb[previousBlockX][previousBlockY]->moveMob(7);
+					previousBlockX = xBlock;
+					previousBlockY = yBlock;
+					drawBoard(-100, -100, currentTeam);
+				}
 			}
 		}
 	}
@@ -171,6 +173,89 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 		}
 		break;
 	}
+	if (xBlock >= 0 && yBlock >= 0 && xBlock <= 9 && yBlock <= 9 && cb[xBlock][yBlock] != nullptr) {
+		drawFillCell(xBlock, yBlock, YELLOW);
+		//左上
+		if (xBlock - 1 >= 0 && yBlock - 1 >= 0) {
+			if (cb[xBlock - 1][yBlock - 1] == nullptr) {
+				drawFillCell(xBlock - 1, yBlock - 1, GREEN);
+			}
+			else if (cb[xBlock - 1][yBlock - 1] != nullptr && cb[xBlock - 1][yBlock - 1]->getTeam() != currentTeam) {
+				drawFillCell(xBlock - 1, yBlock - 1, RED);
+			}
+			else;
+		}
+		//正上
+		if (xBlock >= 0 && yBlock - 1 >= 0) {
+			if (cb[xBlock][yBlock - 1] == nullptr) {
+				drawFillCell(xBlock, yBlock - 1, GREEN);
+			}
+			else if (cb[xBlock][yBlock - 1] != nullptr && cb[xBlock][yBlock - 1]->getTeam() != currentTeam) {
+				drawFillCell(xBlock, yBlock - 1, RED);
+			}
+			else;
+		}
+		//右上
+		if (xBlock + 1 >= 0 && yBlock - 1 >= 0) {
+			if (cb[xBlock + 1][yBlock - 1] == nullptr) {
+				drawFillCell(xBlock + 1, yBlock - 1, GREEN);
+			}
+			else if (cb[xBlock + 1][yBlock - 1] != nullptr && cb[xBlock + 1][yBlock - 1]->getTeam() != currentTeam) {
+				drawFillCell(xBlock + 1, yBlock - 1, RED);
+			}
+			else;
+		}
+		//正左
+		if (xBlock - 1 >= 0 && yBlock >= 0) {
+			if (cb[xBlock - 1][yBlock] == nullptr) {
+				drawFillCell(xBlock - 1, yBlock, GREEN);
+			}
+			else if (cb[xBlock - 1][yBlock] != nullptr && cb[xBlock - 1][yBlock]->getTeam() != currentTeam) {
+				drawFillCell(xBlock - 1, yBlock, RED);
+			}
+			else;
+		}
+		//正右
+		if (xBlock + 1 >= 0 && yBlock >= 0) {
+			if (cb[xBlock + 1][yBlock] == nullptr) {
+				drawFillCell(xBlock + 1, yBlock, GREEN);
+			}
+			else if (cb[xBlock + 1][yBlock] != nullptr && cb[xBlock + 1][yBlock]->getTeam() != currentTeam) {
+				drawFillCell(xBlock + 1, yBlock, RED);
+			}
+			else;
+		}
+		//左下
+		if (xBlock - 1 >= 0 && yBlock + 1 >= 0) {
+			if (cb[xBlock - 1][yBlock + 1] == nullptr) {
+				drawFillCell(xBlock - 1, yBlock + 1, GREEN);
+			}
+			else if (cb[xBlock - 1][yBlock + 1] != nullptr && cb[xBlock - 1][yBlock + 1]->getTeam() != currentTeam) {
+				drawFillCell(xBlock - 1, yBlock + 1, RED);
+			}
+			else;
+		}
+		//正下
+		if (xBlock >= 0 && yBlock + 1 >= 0) {
+			if (cb[xBlock][yBlock + 1] == nullptr) {
+				drawFillCell(xBlock, yBlock + 1, GREEN);
+			}
+			else if (cb[xBlock][yBlock + 1] != nullptr && cb[xBlock][yBlock + 1]->getTeam() != currentTeam) {
+				drawFillCell(xBlock, yBlock + 1, RED);
+			}
+			else;
+		}
+		//右下
+		if (xBlock + 1 >= 0 && yBlock + 1 >= 0) {
+			if (cb[xBlock + 1][yBlock + 1] == nullptr) {
+				drawFillCell(xBlock + 1, yBlock + 1, GREEN);
+			}
+			else if (cb[xBlock + 1][yBlock + 1] != nullptr && cb[xBlock + 1][yBlock + 1]->getTeam() != currentTeam) {
+				drawFillCell(xBlock + 1, yBlock + 1, RED);
+			}
+			else;
+		}
+	}
 	//监控键盘和鼠标
 	while (true) {
 		if (_kbhit()) {
@@ -226,8 +311,9 @@ void Display::drawFillCircle(int i, int j, int R, int G, int B){
 	setrop2(R2_COPYPEN);
 	fillcircle((X_START_LENGTH + (i  * DEFAULT_BLOCK_SIZE) + 0.5*DEFAULT_BLOCK_SIZE), (Y_START_LENGTH + (j  * DEFAULT_BLOCK_SIZE) + 0.5*DEFAULT_BLOCK_SIZE), 0.5*DEFAULT_BLOCK_SIZE - COLOR_BLOCK_SHRINK_SIZE);
 }
-Point Display::pixelToCell(int ver, int hor) {
+int *Display::pixelToCell(int ver, int hor) {
 	int x = 0, y = 0;
+	int temp[2];
 	if ((ver >= X_START_LENGTH) && (hor >= Y_START_LENGTH) && (ver <= (X_START_LENGTH + 10 * (DEFAULT_BLOCK_SIZE))) && (hor <= (Y_START_LENGTH + 10 * (DEFAULT_BLOCK_SIZE)))) {
 		while (ver >= X_START_LENGTH + DEFAULT_BLOCK_SIZE) {
 			ver -= DEFAULT_BLOCK_SIZE;
@@ -237,12 +323,14 @@ Point Display::pixelToCell(int ver, int hor) {
 			hor -= DEFAULT_BLOCK_SIZE;
 			y++;
 		}
-		Point p(x, y);
-		return p;
+		temp[0] = x;
+		temp[1] = y;
+		return temp;
 	}
 	else {
-		Point p;
-		return p;
+		temp[0] = 100;
+		temp[1] = 100;
+		return temp;
 	}
 	
 }

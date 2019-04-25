@@ -16,15 +16,15 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 	int **vb = battleSystem.getVisibleBoard();//存放棋盘可见范围
 	int xBlock = 0, yBlock = 0;//本次传入的点击坐标所代表的格子数
 	bool flag = false;
-	//cleardevice(); //清屏重画 暂时不知道是否用得到
+	cleardevice(); //清屏重画 必须使用 因为涉及到出现菜单和菜单消失的操作
 	//这一部分是把点到棋盘内的像素转化为格子 
 	int *temp = pixelToCell(ver,hor);
 	xBlock = temp[0];
 	yBlock = temp[1];
 	int changedX = (xBlock - previousBlockX), changedY = (yBlock - previousBlockY);//记录改变量
-	//识别改变棋子位置的操作(暂时没有考虑godmove的情况)     →  糨糊  ←  目前发现的问题：左上角附近的棋子会变得很奇怪
+	//识别改变棋子位置的操作(此为默认情况，godmove另写) 现在你只能操控本队的棋子了
 	if (previousBlockX >= 0 && previousBlockY >= 0 && previousBlockX <= 9 && previousBlockY <= 9) {
-		if ((((abs(changedX) == 0) || (abs(changedX) == 1)) && ((abs(changedY) == 0) || (abs(changedY) == 1))) && (cb[previousBlockX][previousBlockY] != nullptr)) {
+		if ((((abs(changedX) == 0) || (abs(changedX) == 1)) && ((abs(changedY) == 0) || (abs(changedY) == 1))) && (cb[previousBlockX][previousBlockY] != nullptr) && (cb[previousBlockX][previousBlockY]->getTeam() == currentTeam)) {
 			flag = true;
 			if (changedX == 0) {
 				if (changedY == 0) {
@@ -173,8 +173,10 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 		}
 		break;
 	}
-	if (xBlock >= 0 && yBlock >= 0 && xBlock <= 9 && yBlock <= 9 && cb[xBlock][yBlock] != nullptr) {
+	//显示当前棋子的可操控范围
+	if (xBlock >= 0 && yBlock >= 0 && xBlock <= 9 && yBlock <= 9 && cb[xBlock][yBlock] != nullptr && cb[xBlock][yBlock]->getTeam() == currentTeam) {
 		drawFillCell(xBlock, yBlock, YELLOW);
+		drawChessMenu(xBlock, yBlock);
 		//左上
 		if (xBlock - 1 >= 0 && yBlock - 1 >= 0) {
 			if (cb[xBlock - 1][yBlock - 1] == nullptr) {
@@ -279,38 +281,44 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 				case WM_LBUTTONDOWN:
 					mouseCurrentX = m.x;
 					mouseCurrentY = m.y;
-					//std::cout << m.x << "," << m.y << std::endl;
-					//std::cout<<pixelToCell(m.x, m.y).getX()<<","<<pixelToCell(m.x, m.y).getY()<<std::endl;
+					/*std::cout << m.x << "," << m.y << std::endl;
+					std::cout<<pixelToCell(m.x, m.y)[0]<<","<<pixelToCell(m.x, m.y)[1]<<std::endl;*/
 					drawBoard(mouseCurrentX, mouseCurrentY, currentTeam);
 					break;
 				}
 			}
 		}
 }
+
 void Display::drawBlankCell(int i, int j) {
 	setrop2(R2_BLACK);
 	rectangle(X_START_LENGTH + i * DEFAULT_BLOCK_SIZE, Y_START_LENGTH + j * DEFAULT_BLOCK_SIZE, X_START_LENGTH + (i + 1) * DEFAULT_BLOCK_SIZE, Y_START_LENGTH + (j + 1) * DEFAULT_BLOCK_SIZE);
 }
+
 void Display::drawFillCell(int i, int j, COLORREF x) {
 	setfillcolor(x);
 	setrop2(R2_COPYPEN);
 	solidrectangle((X_START_LENGTH + COLOR_BLOCK_SHRINK_SIZE) + i * DEFAULT_BLOCK_SIZE, (Y_START_LENGTH + COLOR_BLOCK_SHRINK_SIZE) + j * DEFAULT_BLOCK_SIZE, (X_START_LENGTH - COLOR_BLOCK_SHRINK_SIZE) + (i + 1) * DEFAULT_BLOCK_SIZE, (Y_START_LENGTH - COLOR_BLOCK_SHRINK_SIZE) + (j + 1) * DEFAULT_BLOCK_SIZE);
 }
+
 void Display::drawFillCell(int i,int j,int R,int G,int B) {
 	setfillcolor(RGB(R,G,B));
 	setrop2(R2_COPYPEN);
 	solidrectangle((X_START_LENGTH + COLOR_BLOCK_SHRINK_SIZE) + i * DEFAULT_BLOCK_SIZE, (Y_START_LENGTH + COLOR_BLOCK_SHRINK_SIZE) + j * DEFAULT_BLOCK_SIZE, (X_START_LENGTH - COLOR_BLOCK_SHRINK_SIZE) + (i + 1) * DEFAULT_BLOCK_SIZE, (Y_START_LENGTH - COLOR_BLOCK_SHRINK_SIZE) + (j + 1) * DEFAULT_BLOCK_SIZE);
 }
+
 void Display::drawFillCircle(int i, int j, COLORREF x){
 	setfillcolor(x);
 	setrop2(R2_COPYPEN);
 	fillcircle((X_START_LENGTH + (i  * DEFAULT_BLOCK_SIZE) + 0.5*DEFAULT_BLOCK_SIZE), (Y_START_LENGTH + (j  * DEFAULT_BLOCK_SIZE) + 0.5*DEFAULT_BLOCK_SIZE), 0.5*DEFAULT_BLOCK_SIZE - COLOR_BLOCK_SHRINK_SIZE);
 }
+
 void Display::drawFillCircle(int i, int j, int R, int G, int B){
 	setfillcolor(RGB(R,G,B));
 	setrop2(R2_COPYPEN);
 	fillcircle((X_START_LENGTH + (i  * DEFAULT_BLOCK_SIZE) + 0.5*DEFAULT_BLOCK_SIZE), (Y_START_LENGTH + (j  * DEFAULT_BLOCK_SIZE) + 0.5*DEFAULT_BLOCK_SIZE), 0.5*DEFAULT_BLOCK_SIZE - COLOR_BLOCK_SHRINK_SIZE);
 }
+
 int *Display::pixelToCell(int ver, int hor) {
 	int x = 0, y = 0;
 	int temp[2];
@@ -333,4 +341,14 @@ int *Display::pixelToCell(int ver, int hor) {
 		return temp;
 	}
 	
+}
+
+void Display::drawChessMenu(int x, int y) {//需要研究字符串的转换
+	RECT controlBoard = { 910,80,1250,720 };
+	rectangle(910, 80, 1250, 720);
+	TCHAR p[100];
+	Mob***cb = battleSystem.getChessBoard();
+	_stprintf_s(p, _T("NAME:%s ATK:%d HP:%d DEF:%d TEAM:%d"), cb[x][y]->getName(),cb[x][y]->getATK(),cb[x][y]->getHP(),cb[x][y]->getDEF(),cb[x][y]->getTeam());
+	settextcolor(BLACK);
+	outtextxy(910,80,p);
 }

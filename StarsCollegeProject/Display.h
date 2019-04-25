@@ -17,6 +17,7 @@ public:
 	void drawFillCircle(int i, int j, COLORREF x);//用来表示棋子的一个涂色圆形 使用颜色名称
 	void drawFillCircle(int i, int j, int R, int G, int B);//用来表示棋子的一个涂色圆形 使用RGB值
 	int* pixelToCell(int ver, int hor);//传入点击位置横纵的像素值，返回代表点击位置横纵坐标的数组(注意：必须点在棋盘内)
+	void drawChessMenu(int x, int y);//在选中己方棋子时调用，在画面右边显示一个菜单
 };
 
 #endif //SUPERCHAT_DISPLAY_H

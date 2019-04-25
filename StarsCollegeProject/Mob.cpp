@@ -79,6 +79,7 @@ int Mob::balanceHD(){
     else{
         if(DEF < 0 && HP > 0){
             HP -= (-DEF);
+			DEF = 0;
             return HP>0 ? 0 : 1;//整合后存活返回0 被破坏返回1
         }else if(DEF >= 0 && HP <= 0){ HP = 0; return 2; }//带盾死返回2
         else if(DEF < 0 && HP <= 0){ HP = 0; return 3; }//穿盾迁血返回3(欠了命的那种？ 不知道会不会发生)
@@ -103,6 +104,7 @@ int MeleeMob::hitBack(Mob *from) {
     if(from->getType() == 1){
         //检测是否为近战单位
         from->reduceDEF(this->ATK,this);
+		from->balanceHD();
         return 0;//反击发动成功
     }else{
         return 1;//反击发动失败

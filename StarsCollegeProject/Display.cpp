@@ -7,6 +7,7 @@ RECT fullScreenRect = { 0,0,1280,960 };//制造一个大小为窗口大小的矩形
 MOUSEMSG m;		// 定义鼠标消息
 int mouseCurrentX, mouseCurrentY; //重新绘图时使用的参数，确定鼠标位置
 int previousBlockX = 200, previousBlockY = 200;
+LOGFONT f;
 Display::Display(){}
 Display::~Display(){}
 
@@ -16,7 +17,9 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 	int **vb = battleSystem.getVisibleBoard();//存放棋盘可见范围
 	int xBlock = 0, yBlock = 0;//本次传入的点击坐标所代表的格子数
 	bool flag = false;
-	cleardevice(); //清屏重画 必须使用 因为涉及到出现菜单和菜单消失的操作
+	setfillcolor(WHITE);
+	fillrectangle(855, 75, 1250, 720);
+	//cleardevice(); //清屏重画 必须使用 因为涉及到出现菜单和菜单消失的操作
 	//这一部分是把点到棋盘内的像素转化为格子 
 	int *temp = pixelToCell(ver,hor);
 	xBlock = temp[0];
@@ -178,7 +181,7 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 		drawFillCell(xBlock, yBlock, YELLOW);
 		drawChessMenu(xBlock, yBlock);
 		//左上
-		if (xBlock - 1 >= 0 && yBlock - 1 >= 0) {
+		if (xBlock - 1 >= 0 && yBlock - 1 >= 0 &&xBlock - 1 <= 9 && yBlock - 1 <= 9) {
 			if (cb[xBlock - 1][yBlock - 1] == nullptr) {
 				drawFillCell(xBlock - 1, yBlock - 1, GREEN);
 			}
@@ -188,7 +191,7 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 			else;
 		}
 		//正上
-		if (xBlock >= 0 && yBlock - 1 >= 0) {
+		if (xBlock >= 0 && yBlock - 1 >= 0 && xBlock <= 9 && yBlock - 1 <= 9) {
 			if (cb[xBlock][yBlock - 1] == nullptr) {
 				drawFillCell(xBlock, yBlock - 1, GREEN);
 			}
@@ -198,7 +201,7 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 			else;
 		}
 		//右上
-		if (xBlock + 1 >= 0 && yBlock - 1 >= 0) {
+		if (xBlock + 1 >= 0 && yBlock - 1 >= 0&& xBlock + 1 <= 9 && yBlock - 1 <= 9) {
 			if (cb[xBlock + 1][yBlock - 1] == nullptr) {
 				drawFillCell(xBlock + 1, yBlock - 1, GREEN);
 			}
@@ -208,7 +211,7 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 			else;
 		}
 		//正左
-		if (xBlock - 1 >= 0 && yBlock >= 0) {
+		if (xBlock - 1 >= 0 && yBlock >= 0&& xBlock - 1 <= 9 && yBlock <= 9) {
 			if (cb[xBlock - 1][yBlock] == nullptr) {
 				drawFillCell(xBlock - 1, yBlock, GREEN);
 			}
@@ -218,7 +221,7 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 			else;
 		}
 		//正右
-		if (xBlock + 1 >= 0 && yBlock >= 0) {
+		if (xBlock + 1 >= 0 && yBlock >= 0&& xBlock + 1 <= 9 && yBlock <= 9) {
 			if (cb[xBlock + 1][yBlock] == nullptr) {
 				drawFillCell(xBlock + 1, yBlock, GREEN);
 			}
@@ -228,7 +231,7 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 			else;
 		}
 		//左下
-		if (xBlock - 1 >= 0 && yBlock + 1 >= 0) {
+		if (xBlock - 1 >= 0 && yBlock + 1 >= 0&& xBlock - 1 <= 9 && yBlock + 1 <= 9) {
 			if (cb[xBlock - 1][yBlock + 1] == nullptr) {
 				drawFillCell(xBlock - 1, yBlock + 1, GREEN);
 			}
@@ -238,7 +241,7 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 			else;
 		}
 		//正下
-		if (xBlock >= 0 && yBlock + 1 >= 0) {
+		if (xBlock >= 0 && yBlock + 1 >= 0&& xBlock <= 9 && yBlock + 1 <= 9) {
 			if (cb[xBlock][yBlock + 1] == nullptr) {
 				drawFillCell(xBlock, yBlock + 1, GREEN);
 			}
@@ -248,7 +251,7 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 			else;
 		}
 		//右下
-		if (xBlock + 1 >= 0 && yBlock + 1 >= 0) {
+		if (xBlock + 1 >= 0 && yBlock + 1 >= 0&&xBlock + 1 <= 9 && yBlock + 1 <= 9) {
 			if (cb[xBlock + 1][yBlock + 1] == nullptr) {
 				drawFillCell(xBlock + 1, yBlock + 1, GREEN);
 			}
@@ -281,8 +284,8 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 				case WM_LBUTTONDOWN:
 					mouseCurrentX = m.x;
 					mouseCurrentY = m.y;
-					/*std::cout << m.x << "," << m.y << std::endl;
-					std::cout<<pixelToCell(m.x, m.y)[0]<<","<<pixelToCell(m.x, m.y)[1]<<std::endl;*/
+					std::cout << m.x << "," << m.y << std::endl;
+					std::cout<<pixelToCell(m.x, m.y)[0]<<","<<pixelToCell(m.x, m.y)[1]<<std::endl;
 					drawBoard(mouseCurrentX, mouseCurrentY, currentTeam);
 					break;
 				}
@@ -344,11 +347,18 @@ int *Display::pixelToCell(int ver, int hor) {
 }
 
 void Display::drawChessMenu(int x, int y) {//需要研究字符串的转换
-	RECT controlBoard = { 910,80,1250,720 };
-	rectangle(910, 80, 1250, 720);
+	RECT controlBoard = { 855,75,1250,720 };
+	setrop2(R2_BLACK);
+	rectangle(855, 75, 1250, 720);
+	gettextstyle(&f);
 	TCHAR p[100];
 	Mob***cb = battleSystem.getChessBoard();
 	_stprintf_s(p, _T("NAME:%s ATK:%d HP:%d DEF:%d TEAM:%d"), cb[x][y]->getName(),cb[x][y]->getATK(),cb[x][y]->getHP(),cb[x][y]->getDEF(),cb[x][y]->getTeam());
 	settextcolor(BLACK);
-	outtextxy(910,80,p);
+	f.lfHeight = 20;
+	f.lfWidth = 11;
+	f.lfQuality = PROOF_QUALITY;
+	_tcscpy_s(f.lfFaceName, _T("黑体"));
+	settextstyle(&f);
+	outtextxy(860,90,p);
 }

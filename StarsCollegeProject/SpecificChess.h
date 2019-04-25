@@ -9,7 +9,7 @@
 
 class TestChess :public MeleeMob,public MobR{
 public:
-    TestChess():MeleeMob(1,"test",10,5,10),MobR(1,"test",10,5,10),Mob(1,"test",10,5,10){};
+    TestChess():MeleeMob(1,"测试用棋子",10,5,10),MobR(1,"测试用棋子",10,5,10),Mob(1,"测试用棋子",10,5,10){};
 };
 
 

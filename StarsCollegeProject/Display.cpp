@@ -1,13 +1,9 @@
 #include "SuperChat.h"
-#define X_START_LENGTH 130 //第一个格子的左上顶点的X轴坐标
-#define Y_START_LENGTH 30 //第一个格子的左上顶点的Y轴坐标
-#define DEFAULT_BLOCK_SIZE 70 //每个边框格子的大小
-#define COLOR_BLOCK_SHRINK_SIZE 3 //涂色格子向内收缩的像素值	
-RECT fullScreenRect = { 0,0,1280,960 };//制造一个大小为窗口大小的矩形
+RECT fullScreenRect = { 0,0,1280,960 };//制造一个大小为窗口大小的矩形 
 MOUSEMSG m;		// 定义鼠标消息
 int mouseCurrentX, mouseCurrentY; //重新绘图时使用的参数，确定鼠标位置
 int previousBlockX = 200, previousBlockY = 200;
-LOGFONT f;
+LOGFONT f;//一个存放当前字体设置的地址
 Display::Display(){}
 Display::~Display(){}
 
@@ -17,7 +13,7 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 	int **vb = battleSystem.getVisibleBoard();//存放棋盘可见范围
 	int xBlock = 0, yBlock = 0;//本次传入的点击坐标所代表的格子数
 	bool flag = false;
-	setfillcolor(WHITE);
+	setfillcolor(WHITE);//把。。。菜单涂掉。。。
 	fillrectangle(855, 75, 1250, 720);
 	//cleardevice(); //清屏重画 必须使用 因为涉及到出现菜单和菜单消失的操作
 	//这一部分是把点到棋盘内的像素转化为格子 
@@ -265,16 +261,11 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 	while (true) {
 		if (_kbhit()) {
 			int ch = _getch();
-			if (ch == 27) {
-				if (currentTeam == 1) {
-					currentTeam = 2;
-					drawBoard(previousBlockX, previousBlockY, currentTeam);
-				}
-				else if (currentTeam == 2) {
-					currentTeam = 1;
-					drawBoard(previousBlockX, previousBlockY, currentTeam);
-					//drawPauseMenu(fullScreenRect);
-				}
+			if (ch == 67 || ch== 99) {
+				currentTeam = switchCurrentTeam(currentTeam);
+				drawBoard(previousBlockX, previousBlockY, currentTeam);
+				}else if(ch == 27){
+				drawPauseMenu(fullScreenRect,currentTeam);
 			}
 		}
 			else if (MouseHit()) {
@@ -346,19 +337,60 @@ int *Display::pixelToCell(int ver, int hor) {
 	
 }
 
-void Display::drawChessMenu(int x, int y) {//需要研究字符串的转换
-	RECT controlBoard = { 855,75,1250,720 };
-	setrop2(R2_BLACK);
-	rectangle(855, 75, 1250, 720);
-	gettextstyle(&f);
-	TCHAR p[100];
+void Display::drawChessMenu(int x, int y) {
+	RECT controlBoard = { 855,75,1250,720 };//这个。。。似乎没什么用
+	setrop2(R2_BLACK); //边框用的黑色
+	rectangle(855, 75, 1250, 720); //绘制边框
+	gettextstyle(&f); //得到当前字体设置
+	TCHAR a[100],b[100],c[100],d[100],e[100]; //我觉得100够大了
 	Mob***cb = battleSystem.getChessBoard();
-	_stprintf_s(p, _T("NAME:%s ATK:%d HP:%d DEF:%d TEAM:%d"), cb[x][y]->getName(),cb[x][y]->getATK(),cb[x][y]->getHP(),cb[x][y]->getDEF(),cb[x][y]->getTeam());
+	_stprintf_s(a, _T("NAME:%s"), cb[x][y]->getName());
+	_stprintf_s(b, _T("  ATK:%d"),cb[x][y]->getATK());
+	_stprintf_s(c, _T("  HP:%d"),cb[x][y]->getHP());            // ←输出一行加一行
+	_stprintf_s(d, _T("  DEF:%d"),cb[x][y]->getDEF());
+	_stprintf_s(e, _T("  TEAM:%d"),cb[x][y]->getTeam());
 	settextcolor(BLACK);
 	f.lfHeight = 20;
-	f.lfWidth = 11;
+	f.lfWidth = 0;
 	f.lfQuality = PROOF_QUALITY;
 	_tcscpy_s(f.lfFaceName, _T("黑体"));
 	settextstyle(&f);
-	outtextxy(860,90,p);
+	outtextxy(865,90,a);
+	outtextxy(865, 90+ENTER_CHAR_SIZE, b);
+	outtextxy(865, 90 + 2*ENTER_CHAR_SIZE, c);            //   ←同上
+	outtextxy(865, 90 + 3 * ENTER_CHAR_SIZE, d);
+	outtextxy(865, 90 + 4 * ENTER_CHAR_SIZE, e);
+}
+
+int Display::switchCurrentTeam(int currentTeam)
+{
+	if (currentTeam == 1) {
+		currentTeam = 2;
+	}
+	else if (currentTeam == 2) {
+		currentTeam = 1;
+	}
+	return currentTeam;
+}
+
+void Display::drawPauseMenu(RECT rect,int currentTeam) {
+	gettextstyle(&f); //得到当前字体设置
+	settextcolor(BLACK);
+	f.lfHeight = 50;
+	f.lfWidth = 0;
+	f.lfQuality = PROOF_QUALITY;
+	_tcscpy_s(f.lfFaceName, _T("黑体"));
+	settextstyle(&f);
+	cleardevice();
+	drawtext(_T("\n\n\n\n\n\n\nNow Pause......\n\nPress ANY key to resume."), &rect, DT_CENTER | DT_VCENTER);
+	while (true) {
+		if (_kbhit()) {
+			int ch = _getch();
+			if (ch) {
+				cleardevice();
+				drawBoard(previousBlockX,previousBlockY,currentTeam);
+			}
+		}
+		else;
+	}
 }

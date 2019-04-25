@@ -19,6 +19,7 @@
 #include "SpecificChess.h"
 #include "SkillSystem.h"
 #include "Display.h"
+#include "Define.h"
 extern BattleSystem battleSystem;
 extern SkillSystem skillSystem;
 extern Display display;

@@ -38,8 +38,11 @@ Mob::~Mob() {
     delete[] NM;
     pointerThis = nullptr;
 }
+
 void Mob::addDEF(int num){ DEF += num; }
+
 void Mob::setTempOperate(int t) { this->tmpOperate = t; }
+
 int Mob::setPosition(Point& p){
     int tmp = position->setXY(p.getX(),p.getY());
     battleSystem.refreshBoard();
@@ -50,7 +53,9 @@ int Mob::setPosition(int x,int y) {
     battleSystem.refreshBoard();
     return tmp;
 }
+
 void Mob::setTeam(int Team){ this->Team = Team; }
+
 const char *Mob::getName() { return NM; }
 int Mob::getID() { return ID; }
 int Mob::getHP() { return HP; }
@@ -64,6 +69,7 @@ int Mob::getTeam(){ return Team;}
 Point& Mob::getPosition() { return *position; }
 Mob* Mob::getPointerThis() { return pointerThis; }
 int Mob::getTempOperate() { return tmpOperate; }
+
 int Mob::reduceHP(int num,Mob* from){
     HP -= num;
     if(HP > 0) return 0;
@@ -78,33 +84,36 @@ int Mob::balanceHD(){
     if(HP > 0 && DEF >= 0) return 0;//无需整合 棋子存活
     else{
         if(DEF < 0 && HP > 0){
-			HP -= (-DEF);
-			DEF = 0;
+            HP -= (-DEF); DEF = 0;
             return HP>0 ? 0 : 1;//整合后存活返回0 被破坏返回1
         }else if(DEF >= 0 && HP <= 0){ HP = 0; return 2; }//带盾死返回2
         else if(DEF < 0 && HP <= 0){ HP = 0; return 3; }//穿盾迁血返回3(欠了命的那种？ 不知道会不会发生)
     }
 }//整合数值 可以将直接计算的盾量血量整合为合理数据
+
 int Mob::moveMob(int toward) { return position->moveMob(toward); }
 
 MobR::MobR(int ID,const char* NM,int maxHP,int defaultATK,int defaultDEX):Mob(ID,NM,maxHP,defaultATK,defaultDEX) {}
 MobR::MobR(MobR& r):Mob(r) {}
 int MobR::getLV(){ return 1; }
+
 MobSR::MobSR(int ID,const char* NM,int maxHP,int defaultATK,int defaultDEX):Mob(ID,NM,maxHP,defaultATK,defaultDEX){}
 MobSR::MobSR(MobSR& s):Mob(s){}
 int MobSR::getLV(){ return 2; }
+
 MobUR::MobUR(int ID,const char* NM,int maxHP,int defaultATK,int defaultDEX):Mob(ID,NM,maxHP,defaultATK,defaultDEX){}
 MobUR::MobUR(MobUR& u):Mob(u){}
 int MobUR::getLV(){ return 3; }
 
 MeleeMob::MeleeMob(int ID,const char* NM,int maxHP,int defaultATK,int defaultDEX):Mob(ID,NM,maxHP,defaultATK,defaultDEX){}
 MeleeMob::MeleeMob(MeleeMob& M):Mob(M) {}
+
 int MeleeMob::getType() { return 1; }
 int MeleeMob::hitBack(Mob *from) {
     if(from->getType() == 1){
         //检测是否为近战单位
         from->reduceDEF(this->ATK,this);
-		from->balanceHD();
+        from->balanceHD();
         return 0;//反击发动成功
     }else{
         return 1;//反击发动失败
@@ -118,11 +127,12 @@ int MeleeMob::beHurt(int num,Mob* from){
 
 RemoteMob::RemoteMob(int ID,const char* NM,int maxHP,int defaultATK,int defaultDEX):Mob(ID,NM,maxHP,defaultATK,defaultDEX){}
 RemoteMob::RemoteMob(RemoteMob& R):Mob(R) {}
+
 int RemoteMob::getType() { return 2; }
 int RemoteMob::hitBack(Mob *from) { return 1; }
 int RemoteMob::beHurt(int num,Mob* from){
     reduceDEF(num,from);
-    if(balanceHD() == 0) return 0;
+    if(balanceHD() == 0){ return hitBack(from); }
     else return 2;
 }
 

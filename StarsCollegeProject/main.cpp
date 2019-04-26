@@ -25,6 +25,7 @@ int main() {
 	battleSystem.setChess(8, 1, &t6);
 	battleSystem.setChess(4, 2, &t7);
 	battleSystem.setChess(6, 6, &t8);
+	battleSystem.refreshTurnCounter();
 	std::cout << t1.getTeam() << std::endl;
 	std::cout << t4.getTeam() << std::endl;
     //i为列 j为行 注意输出顺序

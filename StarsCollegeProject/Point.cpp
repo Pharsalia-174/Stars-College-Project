@@ -15,9 +15,12 @@ Point::Point(Point &p) {
     this->x = p.x;
     this->y = p.y;
 }
+
 int Point::getX() { return x; }
 int Point::getY() { return y; }
+
 Point& Point::getPoint() { return *this; }
+
 int Point::setX(int x) {
     if(x<=9 && x>=0 && battleSystem.getChessBoard()[x][y] == nullptr){
         this->x = x;
@@ -44,6 +47,7 @@ int Point::setXY(int x, int y) {
         this->x = -1; this->y = -1; return -1;
     }
 }
+
 Mob* Point::getMob(int toward) {
     Mob*** tmp = battleSystem.getChessBoard();
     switch (toward){
@@ -82,6 +86,7 @@ Mob* Point::getMob(int toward) {
         default: return tmp[x][y];
     }
 }
+
 int Point::moveMob(int toward) {
     Mob* tmp = getMob(toward);
     int flag = 0;
@@ -197,6 +202,7 @@ int Point::moveMob(int toward) {
     }
     return flag;
 }
+
 int Point::godMove(int x, int y) {
     Mob* tmp = battleSystem.getChessBoard()[x][y];
     int flag = 0;

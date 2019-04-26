@@ -4,7 +4,7 @@
 // Super Chat to Ms.MorinagaMiu,Please.
 // 莫里纳加米女士、许多苏佩尔奇特请。
 //
-
+#pragma warning(disable:4250) 
 #ifndef SUPERCHAT_SUPERCHAT_H
 #define SUPERCHAT_SUPERCHAT_H
 

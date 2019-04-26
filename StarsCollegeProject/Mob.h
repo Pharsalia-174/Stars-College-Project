@@ -27,7 +27,7 @@ public:
     Mob(const Mob& m);
     virtual~Mob();
     //接口
-    virtual int setPosition(Point& p);//重设置坐标
+    virtual int setPosition(Point& p);//重设置坐标 未利用代码
     virtual int setPosition(int x,int y);//重设置坐标
     virtual void setTeam(int Team);
     virtual void setTempOperate(int t);

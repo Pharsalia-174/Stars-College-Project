@@ -11,8 +11,12 @@ Mob* ** BattleSystem::getChessBoard(){
 int** BattleSystem::getVisibleBoard() {
     return visibleBoard;
 }
+
 BattleSystem::BattleSystem():TurnCounter(){
     rounds = 0;
+    destoryedMobs = 0;
+    totalTurns = 0;
+    tempTurns = 0;
     chessBoard = new Mob**[10];
     tempBoard = new Mob**[10];
     visibleBoard = new int*[10];
@@ -41,10 +45,24 @@ BattleSystem::~BattleSystem(){
     delete [] tempBoard;
     delete [] visibleBoard;
 }
+
 int BattleSystem::attackMob(Mob *from, Mob *to) {
-    from->setTempOperate(1); to->setTempOperate(2);
+    from->setTempOperate(1); to->setTempOperate(2);/*未利用代码*/
     return to->beHurt(from->getATK(),from);
 }
+int BattleSystem::attackMob(Mob *from, int x, int y) {
+    if(x<0 || x>9 || y<0 || y>9) return 1;
+    if(chessBoard[x][y] == nullptr) return 1;
+    if(chessBoard[x][y]->getTeam() == from->getTeam()) return 1;
+    Mob* tmp = chessBoard[x][y];
+    tmp->reduceDEF(from->getATK(),from);
+    switch (tmp->balanceHD()){
+        case 0: return 2;
+        case 1: return 0;
+        default: return 0;
+    }
+}
+
 int BattleSystem::setChess(int x, int y, Mob *target) {
     if(chessBoard[x][y] == nullptr){
         //判断能不能放进去
@@ -63,12 +81,14 @@ int BattleSystem::setChess(int x, int y, Mob *target) {
         return 1;
     }
 }
+
 void BattleSystem::setVB(int x, int y,int team) {
     int teamO = (team == 1)? 2 : 1;//得到team的对手的队伍代码
     if(visibleBoard[x][y] == 3 || visibleBoard[x][y] == team) return;
     if(visibleBoard[x][y] == teamO){ visibleBoard[x][y] = 3; return; }
     if(visibleBoard[x][y] == 0){ visibleBoard[x][y] = team; return; }
 }
+
 void BattleSystem::cmdCoutChessBoard() {
     for(int i = 0;i<10;i++){
         for(int j = 0;j<10;j++){
@@ -85,12 +105,13 @@ void BattleSystem::cmdCoutChessBoard() {
 void BattleSystem::cmdCoutTurnCounter() {
     if(TurnCounter.empty()) return;
     auto endIT = TurnCounter.end();
-    iterTC = TurnCounter.begin();
+    auto iterTC = TurnCounter.begin();
     while(iterTC != endIT){
         std::cout<<(*iterTC).getPointer()<<":"<<(*iterTC).getFlag()<<std::endl;
         iterTC++;
     }
 }
+
 int BattleSystem::refreshChessBoard() {
     //转置缓存所有原棋子的指针 清空棋盘
     for(int i = 0;i<10;i++){
@@ -116,6 +137,7 @@ int BattleSystem::refreshChessBoard() {
                     chessBoard[x][y] = tmp;
                 }else{
                     //这里进行亡语（不是
+                    destoryedMobs++;
                     flag = 1;
                 }
             }
@@ -230,7 +252,7 @@ int BattleSystem::refreshIterFromEnd() {
 }
 
 
-int BattleSystem::easyConsole(int operateCode0, int operateCode1, int operateCode2, bool **operateChessArea) {
+int BattleSystem::easyConsole(int operateCode0, int operateCode1, int operateCode2, bool operateChessArea[10][10]) {
     if(iterTC == TurnCounter.end()) return -99; //若迭代器丢失指向 返回-99
     if((*iterTC).getFlag() == 1){
         iterTC++;
@@ -240,18 +262,14 @@ int BattleSystem::easyConsole(int operateCode0, int operateCode1, int operateCod
     int returnTemp = 0;
     switch (operateCode0){
         case 0:
-            if(operateCode1 < 0 || operateCode1 >9 || operateCode1 == 5) return -1;//未知操作符 返回-1
+            if(operateCode1 < 0 || operateCode1 > 9 || operateCode1 == 5) return -1;//未知操作符 返回-1
+            //常规移动函数调用
             else if(operateCode1>=1 && operateCode1<=9){
                 //常规移动
                 returnTemp = (*iterTC).getPointer()->moveMob(operateCode1);
                 //未移动 未战斗 返回1 爱咋咋 您继续
                 if(returnTemp == 1){ return 1; }
-                //迭代器相关处理
-                (*iterTC).setFlag(1);
-                totalTurns++;
-                tempTurns++;
-                iterTC++;
-                refreshIterFromEnd();
+                (*iterTC).setFlag(1); totalTurns++; tempTurns++; iterTC++; refreshIterFromEnd(); //迭代器相关处理
                 return returnTemp;//返回移动结果
             }else if(operateCode1 == 0){
                 //调用GodMove
@@ -264,25 +282,79 @@ int BattleSystem::easyConsole(int operateCode0, int operateCode1, int operateCod
                             returnTemp = (*iterTC).getPointer()->getPosition().godMove(x,y);
                             //判断移动结果
                             if(returnTemp == 1){ return 1; }
-                            (*iterTC).setFlag(1);
-                            totalTurns++;
-                            tempTurns++;
-                            iterTC++;
-                            refreshIterFromEnd();
+                            (*iterTC).setFlag(1); totalTurns++; tempTurns++; iterTC++; refreshIterFromEnd();//迭代器相关处理
                             return returnTemp;//返回移动结果
                         }
                     }
                 }
             }
         case 1:
-
+            if(operateCode1 < 0 || operateCode1 >9 || operateCode1 == 5) return -1;//未知操作符 返回-1
+            //常规攻击函数调用
+            else if(operateCode1>=1 && operateCode1<=9){
+                Mob* fromTmp = (*iterTC).getPointer();
+                Mob* toTmp = fromTmp->getPosition().getMob(operateCode1);
+                //空目标 返回1
+                if(toTmp == nullptr){ return 1; }
+                //若攻击目标为己方 返回1
+                if(fromTmp->getTeam() == toTmp->getTeam()){ return 1; }
+                //根据返回的战斗结果确定对应的反馈数据
+                switch (attackMob(fromTmp,toTmp)){
+                    case 0: returnTemp = 2; break;
+                    case 1: returnTemp = 3; break;
+                    case 2: returnTemp =  0; break;
+                    default: returnTemp = 99; break;
+                }
+                (*iterTC).setFlag(1); totalTurns++; tempTurns++; iterTC++;  //迭代器处理
+                refreshIterFromEnd(); refreshBoard(); refreshTurnCounter(); //刷新棋盘 计数器
+                return returnTemp;
+            }else if(operateCode1 == 0){
+                //针对远程的函数调用以及当有技能发动时的行动
+                if(operateChessArea == nullptr) return -3;//同上
+                if(operateCode2 == 1 || operateCode2 == 0){
+                    //目标单项 或缺省值状态
+                    for(int x = 0;x<10;x++){
+                        for(int y = 0;y<10;y++){
+                            if(operateChessArea[x][y]){
+                                returnTemp = attackMob((*iterTC).getPointer(),x,y);
+                                (*iterTC).setFlag(1); totalTurns++; tempTurns++; iterTC++;//迭代器处理
+                                refreshIterFromEnd(); refreshBoard(); refreshTurnCounter();//刷新棋盘 计数器
+                                return returnTemp;
+                            }
+                        }
+                    }
+                }else if(operateCode2>1){
+                    returnTemp = 1;
+                    Mob* fromTmp = (*iterTC).getPointer();
+                    int tmp;
+                    for(int x = 0;x<10 && operateCode2>0;x++){
+                        for(int y = 0;y<10 && operateCode2>0;y++){
+                            if(operateChessArea[x][y]){
+                                operateCode2--;
+                                tmp = attackMob(fromTmp,x,y);
+                                if(returnTemp == 1 && (tmp == 0 || tmp == 2) ){ returnTemp = 0; }
+                            }
+                        }
+                    }
+                    (*iterTC).setFlag(1); totalTurns++; tempTurns++; iterTC++;//迭代器处理
+                    refreshIterFromEnd(); refreshBoard(); refreshTurnCounter();//刷新棋盘 计数器
+                    return returnTemp;
+                }
+            }
         case 2:
-
+            //空过 请
+            (*iterTC).setFlag(1);
+            totalTurns++;
+            tempTurns++;
+            iterTC++;
+            refreshIterFromEnd();
+            return 0;
         case 3:
 
         default: return -1; //若未找到指定operateCode 返回1
     }
 }
+
 TurnNode::TurnNode(Mob *pointer) {
     pointerThis = pointer;
     flag = 0;
@@ -292,11 +364,14 @@ TurnNode::TurnNode(const TurnNode &t) {
     pointerThis = t.pointerThis;
     flag = t.flag;
 }
+
 int TurnNode::getFlag() { return flag; }
 void TurnNode::setFlag(int f) {
     flag = f<=0? 0 : 1;//以01为分界的设置数据方式
 }
+
 Mob* TurnNode::getPointer() { return pointerThis; }
+
 bool TurnNode::operator<(TurnNode &t) {
     return this->pointerThis->getDEX() < t.pointerThis->getDEX();
 }

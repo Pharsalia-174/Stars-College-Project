@@ -67,7 +67,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="TempOperate规则.txt">
+    <Text Include="返回值规则.txt">
       <Filter>资源文件</Filter>
     </Text>
   </ItemGroup>

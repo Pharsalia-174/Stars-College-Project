@@ -17,13 +17,17 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 	fillrectangle(855, 75, 1250, 720);
 	//cleardevice(); //清屏重画 必须使用 因为涉及到出现菜单和菜单消失的操作
 	//这一部分是把点到棋盘内的像素转化为格子 
+
 	int *temp = pixelToCell(ver,hor);
 	xBlock = temp[0];
 	yBlock = temp[1];
 	int changedX = (xBlock - previousBlockX), changedY = (yBlock - previousBlockY);//记录改变量
-	//识别改变棋子位置的操作(此为默认情况，godmove另写) 现在你只能操控本队的棋子了
+	std::cout << "Now:"<<battleSystem.getCurrentTurnCounterPointer()->getName()<< std::endl;
+	std::cout << battleSystem.getCurrentTurnCounterPointer()->getPosition().getX() << ",";
+	std::cout << battleSystem.getCurrentTurnCounterPointer()->getPosition().getY() << std::endl;
+	//识别改变棋子位置的操作(此为默认情况，godmove另写) 现在你只能操控当前可操控的棋子了
 	if (previousBlockX >= 0 && previousBlockY >= 0 && previousBlockX <= 9 && previousBlockY <= 9) {
-		if ((((abs(changedX) == 0) || (abs(changedX) == 1)) && ((abs(changedY) == 0) || (abs(changedY) == 1))) && (cb[previousBlockX][previousBlockY] != nullptr) && (cb[previousBlockX][previousBlockY]->getTeam() == currentTeam)) {
+		if ((((abs(changedX) == 0) || (abs(changedX) == 1)) && ((abs(changedY) == 0) || (abs(changedY) == 1))) && (cb[previousBlockX][previousBlockY] != nullptr) && (battleSystem.getCurrentTurnCounterPointer() == cb[previousBlockX][previousBlockY])) {
 			flag = true;
 			if (changedX == 0) {
 				if (changedY == 0) {
@@ -31,13 +35,15 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 					previousBlockY = yBlock;
 				}
 				else if (changedY == 1) {
-					cb[previousBlockX][previousBlockY]->moveMob(2);
+					battleSystem.easyConsole(0, 2);
+					battleSystem.cmdCoutChessBoard();
 					previousBlockX = xBlock;
 					previousBlockY = yBlock;
 					drawBoard(-100, -100, currentTeam);
 				}
 				else if (changedY == -1) {
-					cb[previousBlockX][previousBlockY]->moveMob(8);
+					battleSystem.easyConsole(0, 8);
+					battleSystem.cmdCoutChessBoard();
 					previousBlockX = xBlock;
 					previousBlockY = yBlock;
 					drawBoard(-100, -100, currentTeam);
@@ -45,19 +51,22 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 			}
 			else if (changedX == 1) {
 				if (changedY == 0) {
-					cb[previousBlockX][previousBlockY]->moveMob(6);
+					battleSystem.easyConsole(0, 6);
+					battleSystem.cmdCoutChessBoard();
 					previousBlockX = xBlock;
 					previousBlockY = yBlock;
 					drawBoard(-100, -100, currentTeam);
 				}
 				else if (changedY == 1) {
-					cb[previousBlockX][previousBlockY]->moveMob(3);
+					battleSystem.easyConsole(0, 3);
+					battleSystem.cmdCoutChessBoard();
 					previousBlockX = xBlock;
 					previousBlockY = yBlock;
 					drawBoard(-100, -100, currentTeam);
 				}
 				else if (changedY == -1) {
-					cb[previousBlockX][previousBlockY]->moveMob(9);
+					battleSystem.easyConsole(0, 9);
+					battleSystem.cmdCoutChessBoard();
 					previousBlockX = xBlock;
 					previousBlockY = yBlock;
 					drawBoard(-100, -100, currentTeam);
@@ -65,19 +74,22 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 			}
 			else if (changedX == -1) {
 				if (changedY == 0) {
-					cb[previousBlockX][previousBlockY]->moveMob(4);
+					battleSystem.easyConsole(0, 4);
+					battleSystem.cmdCoutChessBoard();
 					previousBlockX = xBlock;
 					previousBlockY = yBlock;
 					drawBoard(-100, -100, currentTeam);
 				}
 				else if (changedY == 1) {
-					cb[previousBlockX][previousBlockY]->moveMob(1);
+					battleSystem.easyConsole(0, 1);
+					battleSystem.cmdCoutChessBoard();
 					previousBlockX = xBlock;
 					previousBlockY = yBlock;
 					drawBoard(-100, -100, currentTeam);
 				}
 				else if (changedY == -1) {
-					cb[previousBlockX][previousBlockY]->moveMob(7);
+					battleSystem.easyConsole(0, 7);
+					battleSystem.cmdCoutChessBoard();
 					previousBlockX = xBlock;
 					previousBlockY = yBlock;
 					drawBoard(-100, -100, currentTeam);
@@ -275,8 +287,8 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 				case WM_LBUTTONDOWN:
 					mouseCurrentX = m.x;
 					mouseCurrentY = m.y;
-					std::cout << m.x << "," << m.y << std::endl;
-					std::cout<<pixelToCell(m.x, m.y)[0]<<","<<pixelToCell(m.x, m.y)[1]<<std::endl;
+					/*std::cout << m.x << "," << m.y << std::endl;
+					std::cout<<pixelToCell(m.x, m.y)[0]<<","<<pixelToCell(m.x, m.y)[1]<<std::endl;*/
 					drawBoard(mouseCurrentX, mouseCurrentY, currentTeam);
 					break;
 				}

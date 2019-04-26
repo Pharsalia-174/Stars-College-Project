@@ -134,6 +134,9 @@
     <ClCompile Include="SkillSystem.cpp" />
     <ClCompile Include="SpecificChess.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="TempOperate规则.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

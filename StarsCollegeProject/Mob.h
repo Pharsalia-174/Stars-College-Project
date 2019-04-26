@@ -55,7 +55,7 @@ public:
     //0:正常整合 棋子存活 1:整合后得到HP<0、DEF=0 2:初始状态HP<0、DEF>0 3:初始HP<0、DEF<0
     virtual int beHurt(int num,Mob* from) = 0;
     virtual int hitBack(Mob* from) = 0;
-    virtual int moveMob(int toward);//接口 返回0通常移动 1没有移动也没有刷新 2发生战斗 刷新 不一定移动
+    virtual int moveMob(int toward);//接口 返回0通常移动 1没有移动也没有刷新 2发生战斗 刷新 不移动 3发生战斗 刷新 移动
 };
 
 //稀有总类 概念抽象类 LEVEL：1 等级系统留空

@@ -3,6 +3,8 @@
 //
 
 #include "SuperChat.h"
+#include "Point.h"
+
 Point::Point(int x,int y){
     if(x>9 || x<0) this->x = 0;
     if(x<=9 && x>=0) this->x = x;
@@ -98,7 +100,9 @@ int Point::moveMob(int toward) {
                 else{
                     //敌方 默认发动攻击 若近战致死则会移动到该格 若远程致死则不会移动 其余判断交给刷新棋盘
                     if(battleSystem.attackMob(getMob(5),tmp) == 2 && getMob(5)->getType() == 1){ this->y ++; }
-                    flag = 2; break;
+                    if(tmp->getHP()>0)flag = 2;
+                    else flag = 3;
+                    break;
                 }
             }
         case 4:
@@ -108,7 +112,9 @@ int Point::moveMob(int toward) {
                 if(tmp->getTeam() == getMob(5)->getTeam()){ flag = 1; break; }
                 else{
                     if(battleSystem.attackMob(getMob(5),tmp) == 2 && getMob(5)->getType() == 1){ this->x --; }
-                    flag = 2; break;
+                    if(tmp->getHP()>0)flag = 2;
+                    else flag = 3;
+                    break;
                 }
             }
         case 6:
@@ -118,7 +124,9 @@ int Point::moveMob(int toward) {
                 if(tmp->getTeam() == getMob(5)->getTeam()){ flag = 1; break; }
                 else{
                     if(battleSystem.attackMob(getMob(5),tmp) == 2 && getMob(5)->getType() == 1){ this->x ++; }
-                    flag = 2; break;
+                    if(tmp->getHP()>0)flag = 2;
+                    else flag = 3;
+                    break;
                 }
             }
         case 8:
@@ -128,7 +136,9 @@ int Point::moveMob(int toward) {
                 if(tmp->getTeam() == getMob(5)->getTeam()){ flag = 1; break; }
                 else{
                     if(battleSystem.attackMob(getMob(5),tmp) == 2 && getMob(5)->getType() == 1){ this->y --; }
-                    flag = 2; break;
+                    if(tmp->getHP()>0)flag = 2;
+                    else flag = 3;
+                    break;
                 }
             }
 
@@ -140,7 +150,9 @@ int Point::moveMob(int toward) {
                 if(tmp->getTeam() == getMob(5)->getTeam()){ flag = 1; break; }
                 else{
                     if(battleSystem.attackMob(getMob(5),tmp) == 2 && getMob(5)->getType() == 1){ this->y++; this->x--; }
-                    flag = 2; break;
+                    if(tmp->getHP()>0)flag = 2;
+                    else flag = 3;
+                    break;
                 }
             }
         case 3:
@@ -150,7 +162,9 @@ int Point::moveMob(int toward) {
                 if(tmp->getTeam() == getMob(5)->getTeam()){ flag = 1; break; }
                 else{
                     if(battleSystem.attackMob(getMob(5),tmp) == 2 && getMob(5)->getType() == 1){ this->y++; this->x++; }
-                    flag = 2; break;
+                    if(tmp->getHP()>0)flag = 2;
+                    else flag = 3;
+                    break;
                 }
             }
         case 7:
@@ -160,7 +174,9 @@ int Point::moveMob(int toward) {
                 if(tmp->getTeam() == getMob(5)->getTeam()){ flag = 1; break; }
                 else{
                     if(battleSystem.attackMob(getMob(5),tmp) == 2 && getMob(5)->getType() == 1){ this->y--; this->x--; }
-                    flag = 2; break;
+                    if(tmp->getHP()>0)flag = 2;
+                    else flag = 3;
+                    break;
                 }
             }
         case 9:
@@ -170,7 +186,9 @@ int Point::moveMob(int toward) {
                 if(tmp->getTeam() == getMob(5)->getTeam()){ flag = 1; break; }
                 else{
                     if(battleSystem.attackMob(getMob(5),tmp) == 2 && getMob(5)->getType() == 1){ this->y--; this->x++; }
-                    flag = 2; break;
+                    if(tmp->getHP()>0)flag = 2;
+                    else flag = 3;
+                    break;
                 }
             }
     }
@@ -190,7 +208,8 @@ int Point::godMove(int x, int y) {
             if(tmp->getTeam() == getMob(5)->getTeam()){ flag = 1; }
             else{
                 if(battleSystem.attackMob(getMob(5),tmp) == 2 && getMob(5)->getType() == 1){ this->x = x; this->y = y; }
-                flag = 2;
+                if(tmp->getHP()>0) flag = 2;
+                else flag = 3;
             }
         }
     }

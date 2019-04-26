@@ -78,7 +78,7 @@ int Mob::balanceHD(){
     if(HP > 0 && DEF >= 0) return 0;//无需整合 棋子存活
     else{
         if(DEF < 0 && HP > 0){
-            HP -= (-DEF);
+			HP -= (-DEF);
 			DEF = 0;
             return HP>0 ? 0 : 1;//整合后存活返回0 被破坏返回1
         }else if(DEF >= 0 && HP <= 0){ HP = 0; return 2; }//带盾死返回2

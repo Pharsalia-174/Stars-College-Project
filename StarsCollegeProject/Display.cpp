@@ -283,36 +283,30 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 			}
 		}
 }
-
 void Display::drawBlankCell(int i, int j) {
 	setrop2(R2_BLACK);
 	rectangle(X_START_LENGTH + i * DEFAULT_BLOCK_SIZE, Y_START_LENGTH + j * DEFAULT_BLOCK_SIZE, X_START_LENGTH + (i + 1) * DEFAULT_BLOCK_SIZE, Y_START_LENGTH + (j + 1) * DEFAULT_BLOCK_SIZE);
 }
-
 void Display::drawFillCell(int i, int j, COLORREF x) {
 	setfillcolor(x);
 	setrop2(R2_COPYPEN);
 	solidrectangle((X_START_LENGTH + COLOR_BLOCK_SHRINK_SIZE) + i * DEFAULT_BLOCK_SIZE, (Y_START_LENGTH + COLOR_BLOCK_SHRINK_SIZE) + j * DEFAULT_BLOCK_SIZE, (X_START_LENGTH - COLOR_BLOCK_SHRINK_SIZE) + (i + 1) * DEFAULT_BLOCK_SIZE, (Y_START_LENGTH - COLOR_BLOCK_SHRINK_SIZE) + (j + 1) * DEFAULT_BLOCK_SIZE);
 }
-
 void Display::drawFillCell(int i,int j,int R,int G,int B) {
 	setfillcolor(RGB(R,G,B));
 	setrop2(R2_COPYPEN);
 	solidrectangle((X_START_LENGTH + COLOR_BLOCK_SHRINK_SIZE) + i * DEFAULT_BLOCK_SIZE, (Y_START_LENGTH + COLOR_BLOCK_SHRINK_SIZE) + j * DEFAULT_BLOCK_SIZE, (X_START_LENGTH - COLOR_BLOCK_SHRINK_SIZE) + (i + 1) * DEFAULT_BLOCK_SIZE, (Y_START_LENGTH - COLOR_BLOCK_SHRINK_SIZE) + (j + 1) * DEFAULT_BLOCK_SIZE);
 }
-
 void Display::drawFillCircle(int i, int j, COLORREF x){
 	setfillcolor(x);
 	setrop2(R2_COPYPEN);
 	fillcircle((X_START_LENGTH + (i  * DEFAULT_BLOCK_SIZE) + 0.5*DEFAULT_BLOCK_SIZE), (Y_START_LENGTH + (j  * DEFAULT_BLOCK_SIZE) + 0.5*DEFAULT_BLOCK_SIZE), 0.5*DEFAULT_BLOCK_SIZE - COLOR_BLOCK_SHRINK_SIZE);
 }
-
 void Display::drawFillCircle(int i, int j, int R, int G, int B){
 	setfillcolor(RGB(R,G,B));
 	setrop2(R2_COPYPEN);
 	fillcircle((X_START_LENGTH + (i  * DEFAULT_BLOCK_SIZE) + 0.5*DEFAULT_BLOCK_SIZE), (Y_START_LENGTH + (j  * DEFAULT_BLOCK_SIZE) + 0.5*DEFAULT_BLOCK_SIZE), 0.5*DEFAULT_BLOCK_SIZE - COLOR_BLOCK_SHRINK_SIZE);
 }
-
 int *Display::pixelToCell(int ver, int hor) {
 	int x = 0, y = 0;
 	int temp[2];
@@ -336,7 +330,6 @@ int *Display::pixelToCell(int ver, int hor) {
 	}
 	
 }
-
 void Display::drawChessMenu(int x, int y) {
 	RECT controlBoard = { 855,75,1250,720 };//这个。。。似乎没什么用
 	setrop2(R2_BLACK); //边框用的黑色
@@ -361,7 +354,6 @@ void Display::drawChessMenu(int x, int y) {
 	outtextxy(865, 90 + 3 * ENTER_CHAR_SIZE, d);
 	outtextxy(865, 90 + 4 * ENTER_CHAR_SIZE, e);
 }
-
 int Display::switchCurrentTeam(int currentTeam)
 {
 	if (currentTeam == 1) {
@@ -372,7 +364,6 @@ int Display::switchCurrentTeam(int currentTeam)
 	}
 	return currentTeam;
 }
-
 void Display::drawPauseMenu(RECT rect,int currentTeam) {
 	gettextstyle(&f); //得到当前字体设置
 	settextcolor(BLACK);

@@ -7,8 +7,8 @@ int main() {
 	setbkcolor(WHITE);//µ×É«£º°×É«
 	cleardevice();//±³¾°°åÍ¿É«
     srand( ( unsigned int )time( nullptr ) );
-    TestChess t1; t1.setTeam(1);
-    TestChess t2; t2.setTeam(1);
+    R_001 t1; t1.setTeam(1);
+	UR_031 t2; t2.setTeam(1);
 	TestChess t3; t3.setTeam(1);
 	TestChess t4; t4.setTeam(1);
 	TestChess t5; t5.setTeam(2);

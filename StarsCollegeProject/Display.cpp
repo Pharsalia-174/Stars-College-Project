@@ -22,9 +22,6 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 	xBlock = temp[0];
 	yBlock = temp[1];
 	int changedX = (xBlock - previousBlockX), changedY = (yBlock - previousBlockY);//记录改变量
-	std::cout << "Now:"<<battleSystem.getCurrentTurnCounterPointer()->getName()<< std::endl;
-	std::cout << battleSystem.getCurrentTurnCounterPointer()->getPosition().getX() << ",";
-	std::cout << battleSystem.getCurrentTurnCounterPointer()->getPosition().getY() << std::endl;
 	//识别改变棋子位置的操作(此为默认情况，godmove另写) 现在你只能操控当前可操控的棋子了
 	if (previousBlockX >= 0 && previousBlockY >= 0 && previousBlockX <= 9 && previousBlockY <= 9) {
 		if ((((abs(changedX) == 0) || (abs(changedX) == 1)) && ((abs(changedY) == 0) || (abs(changedY) == 1))) && (cb[previousBlockX][previousBlockY] != nullptr) && (battleSystem.getCurrentTurnCounterPointer() == cb[previousBlockX][previousBlockY])) {
@@ -184,10 +181,15 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 		}
 		break;
 	}
+	//显示一个格子 表现一下当前的可操作棋子所在的格子
+	if ((cb[battleSystem.getCurrentTurnCounterPointer()->getPosition().getX()][battleSystem.getCurrentTurnCounterPointer()->getPosition().getY()] != nullptr) && (cb[battleSystem.getCurrentTurnCounterPointer()->getPosition().getX()][battleSystem.getCurrentTurnCounterPointer()->getPosition().getY()]->getTeam() == currentTeam)) {
+		drawFillCell(battleSystem.getCurrentTurnCounterPointer()->getPosition().getX(), battleSystem.getCurrentTurnCounterPointer()->getPosition().getY(),MAGENTA);
+	}
 	//显示当前棋子的可操控范围
 	if (xBlock >= 0 && yBlock >= 0 && xBlock <= 9 && yBlock <= 9 && cb[xBlock][yBlock] != nullptr && cb[xBlock][yBlock]->getTeam() == currentTeam) {
 		drawFillCell(xBlock, yBlock, YELLOW);
-		drawChessMenu(xBlock, yBlock);
+		drawChessMenu(xBlock, yBlock,cb[xBlock][yBlock]);
+		drawMoveMenu();
 		//左上
 		if (xBlock - 1 >= 0 && yBlock - 1 >= 0 &&xBlock - 1 <= 9 && yBlock - 1 <= 9) {
 			if (cb[xBlock - 1][yBlock - 1] == nullptr) {
@@ -287,8 +289,8 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 				case WM_LBUTTONDOWN:
 					mouseCurrentX = m.x;
 					mouseCurrentY = m.y;
-					/*std::cout << m.x << "," << m.y << std::endl;
-					std::cout<<pixelToCell(m.x, m.y)[0]<<","<<pixelToCell(m.x, m.y)[1]<<std::endl;*/
+					std::cout << m.x << "," << m.y << std::endl;
+					/*std::cout<<pixelToCell(m.x, m.y)[0]<<","<<pixelToCell(m.x, m.y)[1]<<std::endl;*/
 					drawBoard(mouseCurrentX, mouseCurrentY, currentTeam);
 					break;
 				}
@@ -342,10 +344,16 @@ int *Display::pixelToCell(int ver, int hor) {
 	}
 	
 }
-void Display::drawChessMenu(int x, int y) {
-	RECT controlBoard = { 855,75,1250,720 };//这个。。。似乎没什么用
-	setrop2(R2_BLACK); //边框用的黑色
-	rectangle(855, 75, 1250, 720); //绘制边框
+void Display::drawChessMenu(int x, int y,Mob *chess) {
+	drawButton(855, 75, 1250, 720);
+	const TCHAR *t1 = TEXT("行动");
+	const TCHAR *t2 = TEXT("攻击");
+	const TCHAR *t3 = TEXT("技能");
+	const TCHAR *t4 = TEXT("放弃本次行动");
+	drawButton(890, 250, 1210, 310, t1);
+	drawButton(890, 330, 1210, 390, t2);
+	drawButton(890, 410, 1210, 470, t3);
+	drawButton(890, 490, 1210, 550, t4);
 	gettextstyle(&f); //得到当前字体设置
 	TCHAR a[100],b[100],c[100],d[100],e[100]; //我觉得100够大了
 	Mob***cb = battleSystem.getChessBoard();
@@ -365,6 +373,25 @@ void Display::drawChessMenu(int x, int y) {
 	outtextxy(865, 90 + 2*ENTER_CHAR_SIZE, c);            //   ←同上
 	outtextxy(865, 90 + 3 * ENTER_CHAR_SIZE, d);
 	outtextxy(865, 90 + 4 * ENTER_CHAR_SIZE, e);
+}
+void Display::drawMoveMenu() {
+	setfillcolor(WHITE);//把。。。菜单涂掉。。。
+	fillrectangle(121, 766, 829, 919);
+	drawButton(120, 765, 830, 920);
+	outtextxy(125, 768, TEXT("aaa"));
+}
+void Display::drawButton(int a, int b, int c, int d,const TCHAR *x){
+	RECT buttonRect = { a,b,c,d };
+	setrop2(R2_BLACK); //边框:黑色
+	rectangle(a, b, c, d);
+	gettextstyle(&f);
+	settextcolor(BLACK);
+	f.lfHeight = 20;
+	f.lfWidth = 0;
+	f.lfQuality = PROOF_QUALITY;
+	_tcscpy_s(f.lfFaceName, _T("黑体"));
+	settextstyle(&f);
+	drawtext(x,&buttonRect,DT_CENTER|DT_VCENTER|DT_SINGLELINE);
 }
 int Display::switchCurrentTeam(int currentTeam)
 {

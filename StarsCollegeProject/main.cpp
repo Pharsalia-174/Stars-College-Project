@@ -6,35 +6,18 @@ int main() {
 	initgraph(1280, 960, SHOWCONSOLE);//分辨率：1280*960
 	setbkcolor(WHITE);//底色：白色
 	cleardevice();//背景板涂色
-    srand( ( unsigned int )time( nullptr ) );
-    R_001 t1; t1.setTeam(1);
-	UR_031 t2; t2.setTeam(1);
-	TestChess t3; t3.setTeam(1);
-	TestChess t4; t4.setTeam(1);
-	TestChess t5; t5.setTeam(2);
-	TestChess t6; t6.setTeam(2);
-	TestChess t7; t7.setTeam(2);
-	TestChess t8; t8.setTeam(2);
+	srand((unsigned int)time(nullptr));
 	int testTeam = 1;
-	
-	battleSystem.setChess(0,0, &t1); 
-	battleSystem.setChess(0,1, &t2);
-	battleSystem.setChess(0,2, &t3);
-	battleSystem.setChess(3,3, &t4);
-	battleSystem.setChess(7, 6, &t5);
-	battleSystem.setChess(8, 1, &t6);
-	battleSystem.setChess(4, 2, &t7);
-	battleSystem.setChess(6, 6, &t8);
-	battleSystem.refreshTurnCounter();
-	std::cout << t1.getTeam() << std::endl;
-	std::cout << t4.getTeam() << std::endl;
-    //i为列 j为行 注意输出顺序
-	for (int i = 0; i < 10; i++) {
-		for (int j = 0; j < 10; j++) {
-			std::cout << battleSystem.getVisibleBoard()[j][i] << " ";
-		}
-		std::cout << std::endl;
-	}
+	bool tempX[10][10] = { {false} };
+	tempX[1][1] = true; battleSystem.easyConsole(3,0,1,tempX); tempX[1][1] = false;
+	tempX[2][3] = true; battleSystem.easyConsole(3, 12, 1, tempX); tempX[2][3] = false;
+	tempX[7][6] = true; battleSystem.easyConsole(3, 331, 1, tempX); tempX[7][6] = false;
+	tempX[4][2] = true; battleSystem.easyConsole(3, 6, 1, tempX); tempX[4][2] = false;
+	tempX[3][4] = true; battleSystem.easyConsole(3, 8, 2, tempX); tempX[3][4] = false;
+	tempX[9][1] = true; battleSystem.easyConsole(3, 34, 2, tempX); tempX[9][1] = false;
+	tempX[1][6] = true; battleSystem.easyConsole(3, 21, 2, tempX); tempX[1][6] = false;
+	tempX[2][8] = true; battleSystem.easyConsole(3, 1, 2, tempX); tempX[2][8] = false;
+	battleSystem.battleStart();
 	display.drawBoard();
     return 0;
 }

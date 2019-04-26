@@ -172,19 +172,14 @@ public:
 	UR_032() :RemoteMob(32, "¡È”Ô.—™ƒß∑® ¶", 5, 4, 4), MobUR(32, "¡È”Ô.—™ƒß∑® ¶", 5, 4, 4), Mob(32, "¡È”Ô.—™ƒß∑® ¶", 5, 4, 4) {};
 };
 
-class UR_033 :public MobUR {
-public:
-	UR_033() :MobUR(33, "√Œ(A)", 6, 6, 6), Mob(33, "√Œ(A)", 6, 6, 6) {};
-};
-
 class UR_033_A :public MeleeMob, public MobUR {
 public:
-	UR_033_A() :MeleeMob(33, "√Œ(A)", 6, 6, 6), MobUR(33, "√Œ(A)", 6, 6, 6), Mob(33, "√Œ(A)", 6, 6, 6) {};
+	UR_033_A() :MeleeMob(331, "√Œ(A)", 6, 6, 6), MobUR(331, "√Œ(A)", 6, 6, 6), Mob(331, "√Œ(A)", 6, 6, 6) {};
 };
 
 class UR_033_B :public RemoteMob, public MobUR {
 public:
-	UR_033_B() :RemoteMob(33, "√Œ(B)", 6, 4, 3), MobUR(33, "√Œ(B)", 6, 4, 3), Mob(33, "√Œ(B)", 6, 4, 3) {};
+	UR_033_B() :RemoteMob(332, "√Œ(B)", 6, 4, 3), MobUR(332, "√Œ(B)", 6, 4, 3), Mob(332, "√Œ(B)", 6, 4, 3) {};
 };
 
 class UR_034 :public RemoteMob, public MobUR {

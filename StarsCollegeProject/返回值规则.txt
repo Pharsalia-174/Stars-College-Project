@@ -23,7 +23,13 @@ easyConsole返回值:
                 1:常规 攻击的列表中无棋子被击中
     }
     operateCode0 == 2{ 0;常规 无特殊意义 默认空过必定成功 }
-
+    operateCode0 == 3{
+       -99:严重 迭代器丢失 可能是内存层面的问题
+        -1:普通 未知操作符(operateCode1,operateCode2)
+        -2:普通 无指向操作区(operateChessBoard)
+         0:常规 放置成功
+         1:普通 目标位置存在棋子 无法放置
+    }
 
 
 

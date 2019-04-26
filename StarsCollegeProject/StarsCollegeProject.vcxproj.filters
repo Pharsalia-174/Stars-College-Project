@@ -70,5 +70,8 @@
     <Text Include="返回值规则.txt">
       <Filter>资源文件</Filter>
     </Text>
+    <Text Include="F:\总有一天会写的\战棋基本规则.txt">
+      <Filter>资源文件</Filter>
+    </Text>
   </ItemGroup>
 </Project>

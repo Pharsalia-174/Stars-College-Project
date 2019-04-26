@@ -14,7 +14,7 @@ int** BattleSystem::getVisibleBoard() {
 
 BattleSystem::BattleSystem():TurnCounter(){
     rounds = 0;
-    destoryedMobs = 0;
+    destoryMobs = 0;
     totalTurns = 0;
     tempTurns = 0;
     chessBoard = new Mob**[10];
@@ -35,6 +35,11 @@ BattleSystem::BattleSystem():TurnCounter(){
 }
 BattleSystem::~BattleSystem(){
     TurnCounter.clear();//真的有必要吗(
+    for(int x = 0;x<10;x++){
+        for(int y = 0;y<10;y++){
+           delete chessBoard[x][y];
+        }
+    }
     for(int i = 0;i<10;i++){
         delete [] chessBoard[i];
         delete [] tempBoard[i];
@@ -72,7 +77,7 @@ int BattleSystem::setChess(int x, int y, Mob *target) {
         TurnNode t(target);//实例化一个计数器对象
         t.setFlag(1);//刚刚置入棋盘的都设定为不可行动的棋子
         bool setTC = TurnCounter.empty();
-        TurnCounter.push_back(t);//尾部插入列表
+        TurnCounter.push_front(t);//尾部插入列表
         //刷新计数器与棋盘
         refreshTurnCounterAfterSetChess(setTC);
         refreshBoard();
@@ -87,6 +92,89 @@ void BattleSystem::setVB(int x, int y,int team) {
     if(visibleBoard[x][y] == 3 || visibleBoard[x][y] == team) return;
     if(visibleBoard[x][y] == teamO){ visibleBoard[x][y] = 3; return; }
     if(visibleBoard[x][y] == 0){ visibleBoard[x][y] = team; return; }
+}
+Mob* BattleSystem::instantiateMob(int ID, int team) {
+    Mob* temp;
+    switch(ID){
+        case 0:
+            temp = new TestChess(); break;
+        case 1:
+            temp = new R_001(); break;
+        case 2:
+            temp = new R_002(); break;
+        case 3:
+            temp = new R_003(); break;
+		case 4:
+			temp = new R_004(); break;
+		case 5:
+			temp = new R_005(); break;
+		case 6:
+			temp = new R_006(); break;
+		case 7:
+			temp = new R_007(); break;
+		case 8:
+			temp = new R_008(); break;
+		case 9:
+			temp = new R_009(); break;
+		case 10:
+			temp = new R_010(); break;
+		case 11:
+			temp = new R_011(); break;
+		case 12:
+			temp = new R_012(); break;
+		case 13:
+			temp = new R_013(); break;
+		case 14:
+			temp = new R_014(); break;
+		case 15:
+			temp = new R_015(); break;
+		case 16:
+			temp = new R_016(); break;
+		case 17:
+			temp = new R_017(); break;
+		case 18:
+			temp = new R_018(); break;
+		case 19:
+			temp = new R_019(); break;
+		case 20:
+			temp = new R_020(); break;
+		case 21:
+			temp = new SR_021(); break;
+		case 22:
+			temp = new SR_022(); break;
+		case 23:
+			temp = new SR_023(); break;
+		case 24:
+			temp = new SR_024(); break;
+		case 25:
+			temp = new SR_025(); break;
+		case 26:
+			temp = new SR_026(); break;
+		case 27:
+			temp = new SR_027(); break;
+		case 28:
+			temp = new SR_028(); break;
+		case 29:
+			temp = new SR_029(); break;
+		case 30:
+			temp = new SR_030(); break;
+		case 31:
+			temp = new UR_031(); break;
+		case 32:
+			temp = new UR_032(); break;
+		case 331:
+			temp = new UR_033_A(); break;
+		case 332:
+			temp = new UR_033_B(); break;
+		case 34:
+			temp = new UR_034(); break;
+		/*case 35:
+			temp = new UR_035(); break;*/
+		default: return nullptr;
+    }
+    if(team<=1){ temp->setTeam(1); }
+    if(team>=2){ temp->setTeam(2); }
+    return temp;
 }
 
 void BattleSystem::cmdCoutChessBoard() {
@@ -107,7 +195,7 @@ void BattleSystem::cmdCoutTurnCounter() {
     auto endIT = TurnCounter.end();
     auto iterTC = TurnCounter.begin();
     while(iterTC != endIT){
-        std::cout<<(*iterTC).getPointer()<<":"<<(*iterTC).getFlag()<<std::endl;
+        std::cout<<(*iterTC).getPointer()<<":"<<(*iterTC).getPointer()->getName()<<","<<(*iterTC).getFlag()<<std::endl;
         iterTC++;
     }
 }
@@ -137,7 +225,8 @@ int BattleSystem::refreshChessBoard() {
                     chessBoard[x][y] = tmp;
                 }else{
                     //这里进行亡语（不是
-                    destoryedMobs++;
+                    destoryMobs++;
+                    /*delete tmp;*/
                     flag = 1;
                 }
             }
@@ -214,31 +303,20 @@ Mob *BattleSystem::getCurrentTurnCounterPointer() {
     if(iterTC == TurnCounter.end()) return nullptr;
     else{ return (*iterTC).getPointer(); }
 }
+Mob *BattleSystem::getNextTurnCounterPointer() {
+    auto tmp = iterTC;
+    if(tmp == TurnCounter.end()) return nullptr;
+    else if(++tmp == TurnCounter.end()){ return nullptr; }
+    else{ return (*tmp).getPointer(); }
+}
+//重修中...不保证不会出现bug
 int BattleSystem::refreshTurnCounterAfterSetChess(bool setTC) {
     if(setTC){
         iterTC = TurnCounter.begin();
         return 0;
     }else{
-        //当前为尾迭代器 此时迭代器已经位移至下一项
-        if(++iterTC == TurnCounter.end()){
-            //直接排序 倒序
-            TurnCounter.sort(); TurnCounter.reverse();
-            iterTC = TurnCounter.begin();
-        }else{
-            //缓存当前指向
-            auto tmp = (*iterTC).getPointer();
-            //排序 倒序-->按照DEX从大到小排序
-            TurnCounter.sort(); TurnCounter.reverse();
-            iterTC = TurnCounter.begin();
-            while(true){
-                //检索列表 找到之前的缓存项 用以下一行动回
-                if((*iterTC).getPointer() == tmp){ break; }
-                iterTC++;
-                //如果出现了特殊情况 导致原有内容丢失 返回1
-                if(iterTC == TurnCounter.end()){ return 1; }
-            }
-            return 0;
-        }
+        TurnCounter.sort(); TurnCounter.reverse();
+        return 0;
     }
 }
 int BattleSystem::refreshIterFromEnd() {
@@ -252,24 +330,40 @@ int BattleSystem::refreshIterFromEnd() {
 }
 
 
+void BattleSystem::battleStart() {
+    iterTC = TurnCounter.begin();
+    refreshTurnCounter();
+    refreshBoard();
+}
+
 int BattleSystem::easyConsole(int operateCode0, int operateCode1, int operateCode2, bool operateChessArea[10][10]) {
-    if(iterTC == TurnCounter.end()) return -99; //若迭代器丢失指向 返回-99
-    if((*iterTC).getFlag() == 1){
-        iterTC++;
-        refreshIterFromEnd();
+    int returnTemp = 0;
+	if (TurnCounter.empty() && operateCode0 == 3) {  //第一个棋子 特化处理
+		Mob* tmp = instantiateMob(operateCode1, operateCode2); //实例化对象
+		for (int x = 0; x < 10; x++) {
+			for (int y = 0; y < 10; y++) {
+				if (operateChessArea[x][y]) { setChess(x, y, tmp); iterTCpp(); return 0; }
+			}
+		}
+		setChess(0, 0, tmp); iterTCpp(); return 0;
+	}else if(iterTC == TurnCounter.end() && operateCode0 != 3) return -99; //若迭代器丢失指向 返回-99 
+ 
+    if((*iterTC).getFlag() == 1 ){
+        iterTC++; refreshIterFromEnd();
+        while((*iterTC).getPointer()->getHP()<=0 || (*iterTC).getFlag() == 1){ iterTC++; refreshIterFromEnd(); }
         return -2;
     } //若当前行动的目标已行动过 返回-2 迭代器后移
-    int returnTemp = 0;
     switch (operateCode0){
+        default: return -1; //若未找到指定operateCode 返回1
         case 0:
-            if(operateCode1 < 0 || operateCode1 > 9 || operateCode1 == 5) return -1;//未知操作符 返回-1
+            if(operateCode1 < 0 || operateCode1 >9 || operateCode1 == 5) return -1;//未知操作符 返回-1
             //常规移动函数调用
             else if(operateCode1>=1 && operateCode1<=9){
                 //常规移动
                 returnTemp = (*iterTC).getPointer()->moveMob(operateCode1);
                 //未移动 未战斗 返回1 爱咋咋 您继续
                 if(returnTemp == 1){ return 1; }
-                (*iterTC).setFlag(1); totalTurns++; tempTurns++; iterTC++; refreshIterFromEnd(); //迭代器相关处理
+                iterTCpp(); //迭代器相关处理
                 return returnTemp;//返回移动结果
             }else if(operateCode1 == 0){
                 //调用GodMove
@@ -282,7 +376,7 @@ int BattleSystem::easyConsole(int operateCode0, int operateCode1, int operateCod
                             returnTemp = (*iterTC).getPointer()->getPosition().godMove(x,y);
                             //判断移动结果
                             if(returnTemp == 1){ return 1; }
-                            (*iterTC).setFlag(1); totalTurns++; tempTurns++; iterTC++; refreshIterFromEnd();//迭代器相关处理
+                            iterTCpp(); //迭代器相关处理
                             return returnTemp;//返回移动结果
                         }
                     }
@@ -305,8 +399,7 @@ int BattleSystem::easyConsole(int operateCode0, int operateCode1, int operateCod
                     case 2: returnTemp =  0; break;
                     default: returnTemp = 99; break;
                 }
-                (*iterTC).setFlag(1); totalTurns++; tempTurns++; iterTC++;  //迭代器处理
-                refreshIterFromEnd(); refreshBoard(); refreshTurnCounter(); //刷新棋盘 计数器
+                iterTCpp(); //迭代器相关处理
                 return returnTemp;
             }else if(operateCode1 == 0){
                 //针对远程的函数调用以及当有技能发动时的行动
@@ -317,8 +410,7 @@ int BattleSystem::easyConsole(int operateCode0, int operateCode1, int operateCod
                         for(int y = 0;y<10;y++){
                             if(operateChessArea[x][y]){
                                 returnTemp = attackMob((*iterTC).getPointer(),x,y);
-                                (*iterTC).setFlag(1); totalTurns++; tempTurns++; iterTC++;//迭代器处理
-                                refreshIterFromEnd(); refreshBoard(); refreshTurnCounter();//刷新棋盘 计数器
+                                iterTCpp(); //迭代器相关处理
                                 return returnTemp;
                             }
                         }
@@ -336,23 +428,48 @@ int BattleSystem::easyConsole(int operateCode0, int operateCode1, int operateCod
                             }
                         }
                     }
-                    (*iterTC).setFlag(1); totalTurns++; tempTurns++; iterTC++;//迭代器处理
-                    refreshIterFromEnd(); refreshBoard(); refreshTurnCounter();//刷新棋盘 计数器
+                    iterTCpp(); //迭代器相关处理
                     return returnTemp;
                 }
             }
         case 2:
             //空过 请
-            (*iterTC).setFlag(1);
-            totalTurns++;
-            tempTurns++;
-            iterTC++;
-            refreshIterFromEnd();
+            iterTCpp(); //迭代器相关处理
             return 0;
         case 3:
-
-        default: return -1; //若未找到指定operateCode 返回1
+            Mob* tmp = instantiateMob(operateCode1,operateCode2); //实例化对象
+            Mob* currentPoint = (*iterTC).getPointer(); //缓存当前指向 以免加入棋子后的指向丢失
+            if(tmp == nullptr){ return -1; }
+            returnTemp = -2;
+            //检索
+            for(int x = 0;x<10;x++) {
+                for (int y = 0; y < 10; y++) {
+                    if (operateChessArea[x][y]) {
+                        returnTemp = setChess(x, y, tmp);
+                        if (returnTemp == 0) {
+                            iterTC = TurnCounter.begin();
+                            while((*iterTC).getPointer() != currentPoint){
+                                iterTC++;
+                                if((*iterTC).getPointer() == nullptr) return -99;
+                            }
+                            iterTCpp();
+                        }
+                        return returnTemp;
+                    }
+                }
+            }
     }
+}
+
+void BattleSystem::iterTCpp() {
+    (*iterTC).setFlag(1);
+    totalTurns++;
+    tempTurns++;
+    iterTC++; refreshIterFromEnd();
+    while( (*iterTC).getPointer()->getHP()<=0 || (*iterTC).getFlag() == 1 ){
+        iterTC++; refreshIterFromEnd();
+    }
+    refreshBoard();
 }
 
 TurnNode::TurnNode(Mob *pointer) {
@@ -373,5 +490,5 @@ void TurnNode::setFlag(int f) {
 Mob* TurnNode::getPointer() { return pointerThis; }
 
 bool TurnNode::operator<(TurnNode &t) {
-    return this->pointerThis->getDEX() < t.pointerThis->getDEX();
+    return ( this->pointerThis->getDEX() < t.pointerThis->getDEX() );
 }

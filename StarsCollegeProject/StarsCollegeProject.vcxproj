@@ -135,6 +135,7 @@
     <ClCompile Include="SpecificChess.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="F:\总有一天会写的\战棋基本规则.txt" />
     <Text Include="返回值规则.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

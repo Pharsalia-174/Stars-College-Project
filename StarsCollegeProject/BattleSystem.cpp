@@ -11,44 +11,37 @@ Mob* ** BattleSystem::getChessBoard(){
 int** BattleSystem::getVisibleBoard() {
     return visibleBoard;
 }
+int **BattleSystem::getChessOfTeam(int Team) {
+    if(Team == 1){ return chessOfTeam1; }
+    if(Team == 2){ return chessOfTeam2; }
+}
 
 BattleSystem::BattleSystem():TurnCounter(){
-    rounds = 0;
-    destoryMobs = 0;
-    totalTurns = 0;
-    tempTurns = 0;
-    chessBoard = new Mob**[10];
-    tempBoard = new Mob**[10];
-    visibleBoard = new int*[10];
+    rounds = 0; destroyedMobs = 0; totalTurns = 0; tempTurns = 0;
+    chessBoard = new Mob**[10]; tempBoard = new Mob**[10]; visibleBoard = new int*[10];
+    chessOfTeam1 = new int*[36]; chessOfTeam2 = new int*[36];
+    for(int i = 0;i<36;i++){
+        chessOfTeam1[i] = new int[2]; chessOfTeam1[i][0] = 0; chessOfTeam1[i][1] = 0;
+        chessOfTeam2[i] = new int[2]; chessOfTeam2[i][0] = 0; chessOfTeam2[i][1] = 0;
+    }
     for(int i = 0;i<10;i++){
-        chessBoard[i] = new Mob*[10];
-        tempBoard[i] = new Mob*[10];
+        chessBoard[i] = new Mob*[10]; tempBoard[i] = new Mob*[10];
         visibleBoard[i] = new int[10];
     }
     for(int i = 0;i < 10;i++){
         for(int j = 0;j<10;j++){
-            chessBoard[i][j] = nullptr;
-            tempBoard[i][j] = nullptr;
+            chessBoard[i][j] = nullptr; tempBoard[i][j] = nullptr;
             visibleBoard[i][j] = 0;
         }
     }
 }
 BattleSystem::~BattleSystem(){
     TurnCounter.clear();//真的有必要吗(
-    for(int x = 0;x<10;x++){
-        for(int y = 0;y<10;y++){
-           delete chessBoard[x][y];
-        }
-    }
-    for(int i = 0;i<10;i++){
-        delete [] chessBoard[i];
-        delete [] tempBoard[i];
-        delete [] visibleBoard[i];
-
-    }
-    delete [] chessBoard;
-    delete [] tempBoard;
-    delete [] visibleBoard;
+    for(int i = 0;i<36;i++){ delete [] chessOfTeam1[i]; delete [] chessOfTeam2[i]; }
+    for(int x = 0;x<10;x++){ for(int y = 0;y<10;y++){ delete chessBoard[x][y]; } }
+    for(int i = 0;i<10;i++){ delete [] chessBoard[i]; delete [] tempBoard[i]; delete [] visibleBoard[i]; }
+    delete [] chessOfTeam1; delete [] chessOfTeam2;
+    delete [] chessBoard; delete [] tempBoard; delete [] visibleBoard;
 }
 
 int BattleSystem::attackMob(Mob *from, Mob *to) {
@@ -95,9 +88,10 @@ void BattleSystem::setVB(int x, int y,int team) {
 }
 Mob* BattleSystem::instantiateMob(int ID, int team) {
     Mob* temp;
+    //暂时不启用边缘检测
+    /*if(team == 1){ if(chessOfTeam1[ID][1]>=chessOfTeam1[ID][0]) return nullptr; }
+    if(team == 2){ if(chessOfTeam2[ID][1]>=chessOfTeam2[ID][0]) return nullptr; }*/
     switch(ID){
-        case 0:
-            temp = new TestChess(); break;
         case 1:
             temp = new R_001(); break;
         case 2:
@@ -162,14 +156,12 @@ Mob* BattleSystem::instantiateMob(int ID, int team) {
 			temp = new UR_031(); break;
 		case 32:
 			temp = new UR_032(); break;
-		case 331:
-			temp = new UR_033_A(); break;
-		case 332:
-			temp = new UR_033_B(); break;
+		case 33:
+			temp = new UR_033(); break;
 		case 34:
 			temp = new UR_034(); break;
-		/*case 35:
-			temp = new UR_035(); break;*/
+		case 35:
+			temp = new UR_034(); break;
 		default: return nullptr;
     }
     if(team<=1){ temp->setTeam(1); }
@@ -199,6 +191,42 @@ void BattleSystem::cmdCoutTurnCounter() {
         iterTC++;
     }
 }
+void BattleSystem::cmdCoutChessOfTeam(int Team) {
+    if(Team == 0){
+        std::cout<<"Team1:"<<std::endl;
+        for(int i = 0;i<36;i++){
+            if(chessOfTeam1[i][0] > 0 || chessOfTeam1[i][1] > 0){
+                std::cout<<"ID:"<<i<<" "<<"TotalNums:"<<chessOfTeam1[i][0]<<" "<<"RemainingNums:"<<chessOfTeam1[i][0]-chessOfTeam1[i][1]<<std::endl;
+            }
+        }
+        std::cout<<getRemainingVacancy(1)<<std::endl; std::cout<<getRemainingChess(1)<<std::endl;
+        std::cout<<"Team2:"<<std::endl;
+        for(int i = 0;i<36;i++){
+            if(chessOfTeam2[i][0] > 0 || chessOfTeam2[i][1] > 0){
+                std::cout<<"ID:"<<i<<" "<<"TotalNums:"<<chessOfTeam2[i][0]<<" "<<"RemainingNums:"<<chessOfTeam2[i][0]-chessOfTeam2[i][1]<<std::endl;
+            }
+        }
+        std::cout<<getRemainingVacancy(2)<<std::endl; std::cout<<getRemainingChess(2)<<std::endl;
+    }
+    if(Team == 1){
+        std::cout<<"Team1:"<<std::endl;
+        for(int i = 0;i<36;i++){
+            if(chessOfTeam1[i][0] > 0 || chessOfTeam1[i][1] > 0){
+                std::cout<<"ID:"<<i<<" "<<"TotalNums:"<<chessOfTeam1[i][0]<<" "<<"RemainingNums:"<<chessOfTeam1[i][0]-chessOfTeam1[i][1]<<std::endl;
+            }
+        }
+        std::cout<<getRemainingVacancy(1)<<std::endl; std::cout<<getRemainingChess(1)<<std::endl;
+    }
+    if(Team == 2){
+        std::cout<<"Team2:"<<std::endl;
+        for(int i = 0;i<36;i++){
+            if(chessOfTeam2[i][0] > 0 || chessOfTeam2[i][1] > 0){
+                std::cout<<"ID:"<<i<<" "<<"TotalNums:"<<chessOfTeam2[i][0]<<" "<<"RemainingNums:"<<chessOfTeam2[i][0]-chessOfTeam2[i][1]<<std::endl;
+            }
+        }
+        std::cout<<getRemainingVacancy(2)<<std::endl; std::cout<<getRemainingChess(2)<<std::endl;
+    }
+}
 
 int BattleSystem::refreshChessBoard() {
     //转置缓存所有原棋子的指针 清空棋盘
@@ -225,7 +253,7 @@ int BattleSystem::refreshChessBoard() {
                     chessBoard[x][y] = tmp;
                 }else{
                     //这里进行亡语（不是
-                    destoryMobs++;
+                    destroyedMobs++;
                     /*delete tmp;*/
                     flag = 1;
                 }
@@ -309,6 +337,10 @@ Mob *BattleSystem::getNextTurnCounterPointer() {
     else if(++tmp == TurnCounter.end()){ return nullptr; }
     else{ return (*tmp).getPointer(); }
 }
+Mob * BattleSystem::getHeadTurnCounterPointer()
+{
+	return (*TurnCounter.begin()).getPointer();
+}
 //重修中...不保证不会出现bug
 int BattleSystem::refreshTurnCounterAfterSetChess(bool setTC) {
     if(setTC){
@@ -329,7 +361,6 @@ int BattleSystem::refreshIterFromEnd() {
     }else{ return 1; }
 }
 
-
 void BattleSystem::battleStart() {
     iterTC = TurnCounter.begin();
     refreshTurnCounter();
@@ -342,10 +373,18 @@ int BattleSystem::easyConsole(int operateCode0, int operateCode1, int operateCod
 		Mob* tmp = instantiateMob(operateCode1, operateCode2); //实例化对象
 		for (int x = 0; x < 10; x++) {
 			for (int y = 0; y < 10; y++) {
-				if (operateChessArea[x][y]) { setChess(x, y, tmp); iterTCpp(); return 0; }
+				if (operateChessArea[x][y]) {
+				    setChess(x, y, tmp);
+                    if(operateCode2 <= 1){ chessOfTeam1[operateCode1][1]++; }
+                    if(operateCode2 >= 2){ chessOfTeam2[operateCode1][1]++; }
+				    iterTCpp(); return 0;
+				}
 			}
 		}
-		setChess(0, 0, tmp); iterTCpp(); return 0;
+		setChess(0, 0, tmp);
+        if(operateCode2 <= 1){ chessOfTeam1[operateCode1][1]++; }
+        if(operateCode2 >= 2){ chessOfTeam2[operateCode1][1]++; }
+		iterTCpp(); return 0;
 	}else if(iterTC == TurnCounter.end() && operateCode0 != 3) return -99; //若迭代器丢失指向 返回-99 
  
     if((*iterTC).getFlag() == 1 ){
@@ -452,6 +491,8 @@ int BattleSystem::easyConsole(int operateCode0, int operateCode1, int operateCod
                                 iterTC++;
                                 if((*iterTC).getPointer() == nullptr) return -99;
                             }
+                            if(operateCode2 <= 1){ chessOfTeam1[operateCode1][1]++; }
+                            if(operateCode2 >= 2){ chessOfTeam2[operateCode1][1]++; }
                             iterTCpp();
                         }
                         return returnTemp;
@@ -460,7 +501,6 @@ int BattleSystem::easyConsole(int operateCode0, int operateCode1, int operateCod
             }
     }
 }
-
 void BattleSystem::iterTCpp() {
     (*iterTC).setFlag(1);
     totalTurns++;
@@ -470,6 +510,47 @@ void BattleSystem::iterTCpp() {
         iterTC++; refreshIterFromEnd();
     }
     refreshBoard();
+}
+
+
+int BattleSystem::getRemainingVacancy(int Team) {
+    int sum = 15;
+    if(Team == 1){
+        for(int t = 0;t<36;t++){ sum -= chessOfTeam1[t][0]; }
+    }else if(Team == 2){
+        for(int t = 0;t<36;t++){ sum -= chessOfTeam2[t][0]; }
+    }else{ return -1; }
+    return sum;
+}
+int BattleSystem::getRemainingChess(int Team) {
+    int sum = 0;
+    if(Team == 1){
+        for(int t = 0;t<36;t++){ sum += (chessOfTeam1[t][0] - chessOfTeam1[t][1]); }
+    }else if(Team == 2){
+        for(int t = 0;t<36;t++){ sum += (chessOfTeam2[t][0] - chessOfTeam2[t][1]); }
+    }else{ return -1; }
+    return sum;
+}
+int BattleSystem::removeChess(int ID, int Team) {
+    if(Team == 1){
+        if(chessOfTeam1[ID][0] == 0) return -1;
+        chessOfTeam1[ID][0]--;
+    }else if(Team == 2){
+        if(chessOfTeam2[ID][0] == 0) return -1;
+        chessOfTeam2[ID][0]--;
+    }else{ return -2; }
+    return getRemainingVacancy(Team);
+}
+int BattleSystem::chooseChess(int ID, int Team) {
+    if(getRemainingVacancy(Team) == 0) return -1;
+    if(Team == 1){
+        if(chessOfTeam1[ID][0] == 3) return -1;
+        chessOfTeam1[ID][0]++;
+    }else if(Team == 2){
+        if(chessOfTeam2[ID][0] == 3) return -1;
+        chessOfTeam2[ID][0]++;
+    }else{ return -2; }
+    return getRemainingVacancy(Team);
 }
 
 TurnNode::TurnNode(Mob *pointer) {
@@ -486,9 +567,22 @@ int TurnNode::getFlag() { return flag; }
 void TurnNode::setFlag(int f) {
     flag = f<=0? 0 : 1;//以01为分界的设置数据方式
 }
-
 Mob* TurnNode::getPointer() { return pointerThis; }
-
 bool TurnNode::operator<(TurnNode &t) {
     return ( this->pointerThis->getDEX() < t.pointerThis->getDEX() );
+}
+
+CoolingNode::CoolingNode(Mob *target,int ID) {
+    skillID = ID;
+    skillFrom = target;
+    coolingCounter = skillSystem.getDefaultCoolingCounter(ID);
+}
+CoolingNode::CoolingNode(CoolingNode &C) {
+    skillID = C.skillID;
+    skillFrom = C.skillFrom;
+    coolingCounter = C.coolingCounter;
+}
+//未完成部分
+int SkillSystem::getDefaultCoolingCounter(int ID) {
+    return 0;
 }

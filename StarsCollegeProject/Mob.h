@@ -106,14 +106,18 @@ public:
     RemoteMob(RemoteMob& R);
     virtual ~RemoteMob();
     int getType() override;
-    virtual int beHurt(int num,Mob* from);//返回0存活 返回2被破坏
+    virtual int beHurt(int num,Mob* from);//返回0存活 返回1未发动反击 返回2被破坏
     virtual int hitBack(Mob* from);//占位用函数 没有实际功能 默认返回1
 };
 //混合类 偏具现类
 class MixMob:virtual public Mob{
-    /*
-     * 留空 到时候再说吧
-     */
+public:
+    explicit MixMob(int ID = 0,const char* NM = nullptr,int maxHP = 0,int defaultATK = 0,int defaultDEX = 0);
+    MixMob(MixMob &M);
+    virtual ~MixMob();
+    int getType() override;
+    virtual int beHurt(int num,Mob* from);//返回0存活 返回1未发动反击 返回2被破坏
+    virtual int hitBack(Mob* from);//反击 返回0反击发动 返回1反击发动失败
 };
 
 #endif //SUPERCHAT_MOB_H

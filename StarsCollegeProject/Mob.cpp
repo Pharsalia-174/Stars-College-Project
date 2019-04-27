@@ -2,6 +2,8 @@
 // Created by Pharsalia on 2019/4/19.
 //
 #include "SuperChat.h"
+#include "Mob.h"
+
 
 Mob::Mob(int ID ,const char *NM, int maxHP, int defaultATK, int defaultDEX) : DEF(0),Team(0) {
     if (NM == nullptr) {
@@ -107,7 +109,6 @@ int MobUR::getLV(){ return 3; }
 
 MeleeMob::MeleeMob(int ID,const char* NM,int maxHP,int defaultATK,int defaultDEX):Mob(ID,NM,maxHP,defaultATK,defaultDEX){}
 MeleeMob::MeleeMob(MeleeMob& M):Mob(M) {}
-
 int MeleeMob::getType() { return 1; }
 int MeleeMob::hitBack(Mob *from) {
     if(from->getType() == 1){
@@ -125,9 +126,9 @@ int MeleeMob::beHurt(int num,Mob* from){
     else return 2;//代表该棋子死亡
 }
 
+
 RemoteMob::RemoteMob(int ID,const char* NM,int maxHP,int defaultATK,int defaultDEX):Mob(ID,NM,maxHP,defaultATK,defaultDEX){}
 RemoteMob::RemoteMob(RemoteMob& R):Mob(R) {}
-
 int RemoteMob::getType() { return 2; }
 int RemoteMob::hitBack(Mob *from) { return 1; }
 int RemoteMob::beHurt(int num,Mob* from){
@@ -136,8 +137,22 @@ int RemoteMob::beHurt(int num,Mob* from){
     else return 2;
 }
 
+
+MixMob::MixMob(int ID, const char *NM, int maxHP, int defaultATK, int defaultDEX) : Mob(ID, NM, maxHP, defaultATK, defaultDEX) {}
+MixMob::MixMob(MixMob& M):Mob(M) {}
+int MixMob::getType() { return 3; }
+//未完成部分
+int MixMob::beHurt(int num, Mob *from) {
+    return 0;
+}
+
+int MixMob::hitBack(Mob *from) {
+    return 0;
+}
+
 MobR::~MobR() = default;
 MobSR::~MobSR() = default;
 MobUR::~MobUR() = default;
 MeleeMob::~MeleeMob() = default;
 RemoteMob::~RemoteMob() = default;
+MixMob::~MixMob() = default;

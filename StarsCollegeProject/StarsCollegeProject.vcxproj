@@ -120,7 +120,6 @@
     <ClInclude Include="Display.h" />
     <ClInclude Include="Mob.h" />
     <ClInclude Include="Point.h" />
-    <ClInclude Include="SkillSystem.h" />
     <ClInclude Include="SpecificChess.h" />
     <ClInclude Include="SuperChat.h" />
   </ItemGroup>

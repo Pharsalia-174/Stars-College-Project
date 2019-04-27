@@ -12,12 +12,12 @@
 #include <iostream>
 #include <string.h>
 #include <stdlib.h>
+#include <string>
 #include <ctime>
 #include "BattleSystem.h"
 #include "Point.h"
 #include "Mob.h"
 #include "SpecificChess.h"
-#include "SkillSystem.h"
 #include "Display.h"
 #include "Define.h"
 extern BattleSystem battleSystem;

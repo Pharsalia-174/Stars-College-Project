@@ -7,11 +7,6 @@
 
 #include "Mob.h"
 //具体信息请自己对照名单文档
-class TestChess :public MeleeMob,public MobR{
-public:
-    TestChess():MeleeMob(0,"test",10,10,10),MobR(0,"test",10,10,10),Mob(0,"test",10,10,10){};
-};
-
 class R_001 :public MeleeMob, public MobR {
 public:
 	R_001() :MeleeMob(1, "一般通过门卫", 5, 3, 5), MobR(1, "一般通过门卫", 5, 3, 5), Mob(1, "一般通过门卫", 5, 3, 5) {};
@@ -172,24 +167,18 @@ public:
 	UR_032() :RemoteMob(32, "灵语.血魔法师", 5, 4, 4), MobUR(32, "灵语.血魔法师", 5, 4, 4), Mob(32, "灵语.血魔法师", 5, 4, 4) {};
 };
 
-class UR_033_A :public MeleeMob, public MobUR {
+class UR_033 :public MeleeMob, public MobUR {
 public:
-	UR_033_A() :MeleeMob(331, "梦(A)", 6, 6, 6), MobUR(331, "梦(A)", 6, 6, 6), Mob(331, "梦(A)", 6, 6, 6) {};
-};
-
-class UR_033_B :public RemoteMob, public MobUR {
-public:
-	UR_033_B() :RemoteMob(332, "梦(B)", 6, 4, 3), MobUR(332, "梦(B)", 6, 4, 3), Mob(332, "梦(B)", 6, 4, 3) {};
+	UR_033() :MeleeMob(33, "梦(A)", 6, 6, 6), MobUR(33, "梦(A)", 6, 6, 6), Mob(33, "梦(A)", 6, 6, 6) {};
 };
 
 class UR_034 :public RemoteMob, public MobUR {
 public:
-	UR_034() :RemoteMob(34, "法尔", 2, 0, 1), MobUR(34, "法尔", 2, 0, 1), Mob(34, "法尔", 2, 0, 1) {};
+	UR_034() :RemoteMob(34, "梦(B)", 6, 4, 3), MobUR(34, "梦(B)", 6, 4, 3), Mob(34, "梦(B)", 6, 4, 3) {};
 };
 
-class UR_035 :public MixMob, public MobUR {
+class UR_035 :public RemoteMob, public MobUR {
 public:
-	UR_035() :MixMob(), MobUR(35, "校长", 15, 15, 15), Mob(35, "校长", 15, 15, 15) {};
+	UR_035() :RemoteMob(34, "法尔", 2, 0, 1), MobUR(34, "法尔", 2, 0, 1), Mob(34, "法尔", 2, 0, 1) {};
 };
-
 #endif //SUPERCHAT_SPECIFICCHESS_H

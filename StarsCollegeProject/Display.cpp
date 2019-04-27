@@ -15,85 +15,139 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 	bool flag = false;
 	setfillcolor(WHITE);//把。。。菜单涂掉。。。
 	fillrectangle(855, 75, 1250, 720);
-	//cleardevice(); //清屏重画 必须使用 因为涉及到出现菜单和菜单消失的操作
+	cleardevice(); //清屏重画 必须使用 因为涉及到出现菜单和菜单消失的操作
 	//这一部分是把点到棋盘内的像素转化为格子 
-
 	int *temp = pixelToCell(ver,hor);
 	xBlock = temp[0];
 	yBlock = temp[1];
 	int changedX = (xBlock - previousBlockX), changedY = (yBlock - previousBlockY);//记录改变量
-	//识别改变棋子位置的操作(此为默认情况，godmove另写) 现在你只能操控当前可操控的棋子了
-	if (previousBlockX >= 0 && previousBlockY >= 0 && previousBlockX <= 9 && previousBlockY <= 9) {
-		if ((((abs(changedX) == 0) || (abs(changedX) == 1)) && ((abs(changedY) == 0) || (abs(changedY) == 1))) && (cb[previousBlockX][previousBlockY] != nullptr) && (battleSystem.getCurrentTurnCounterPointer() == cb[previousBlockX][previousBlockY])) {
-			flag = true;
-			if (changedX == 0) {
-				if (changedY == 0) {
-					previousBlockX = xBlock;
-					previousBlockY = yBlock;
+	int screen = mouseMonitor(ver, hor);
+	switch (screen) {
+	case 1:
+		//识别改变棋子位置的操作(此为默认情况，godmove另写) 现在你只能操控当前可操控的棋子了
+		if (previousBlockX >= 0 && previousBlockY >= 0 && previousBlockX <= 9 && previousBlockY <= 9) {
+			if ((((abs(changedX) == 0) || (abs(changedX) == 1)) && ((abs(changedY) == 0) || (abs(changedY) == 1))) && (cb[previousBlockX][previousBlockY] != nullptr) && (battleSystem.getCurrentTurnCounterPointer() == cb[previousBlockX][previousBlockY])) {
+				flag = true;
+				if (changedX == 0) {
+					if (changedY == 0) {
+						previousBlockX = xBlock;
+						previousBlockY = yBlock;
+					}
+					else if (changedY == 1) {
+						battleSystem.easyConsole(0, 2);
+						battleSystem.cmdCoutChessBoard();
+						previousBlockX = xBlock;
+						previousBlockY = yBlock;
+						drawBoard(-100, -100, currentTeam);
+					}
+					else if (changedY == -1) {
+						battleSystem.easyConsole(0, 8);
+						battleSystem.cmdCoutChessBoard();
+						previousBlockX = xBlock;
+						previousBlockY = yBlock;
+						drawBoard(-100, -100, currentTeam);
+					}
 				}
-				else if (changedY == 1) {
-					battleSystem.easyConsole(0, 2);
-					battleSystem.cmdCoutChessBoard();
-					previousBlockX = xBlock;
-					previousBlockY = yBlock;
-					drawBoard(-100, -100, currentTeam);
+				else if (changedX == 1) {
+					if (changedY == 0) {
+						battleSystem.easyConsole(0, 6);
+						battleSystem.cmdCoutChessBoard();
+						previousBlockX = xBlock;
+						previousBlockY = yBlock;
+						drawBoard(-100, -100, currentTeam);
+					}
+					else if (changedY == 1) {
+						battleSystem.easyConsole(0, 3);
+						battleSystem.cmdCoutChessBoard();
+						previousBlockX = xBlock;
+						previousBlockY = yBlock;
+						drawBoard(-100, -100, currentTeam);
+					}
+					else if (changedY == -1) {
+						battleSystem.easyConsole(0, 9);
+						battleSystem.cmdCoutChessBoard();
+						previousBlockX = xBlock;
+						previousBlockY = yBlock;
+						drawBoard(-100, -100, currentTeam);
+					}
 				}
-				else if (changedY == -1) {
-					battleSystem.easyConsole(0, 8);
-					battleSystem.cmdCoutChessBoard();
-					previousBlockX = xBlock;
-					previousBlockY = yBlock;
-					drawBoard(-100, -100, currentTeam);
-				}
-			}
-			else if (changedX == 1) {
-				if (changedY == 0) {
-					battleSystem.easyConsole(0, 6);
-					battleSystem.cmdCoutChessBoard();
-					previousBlockX = xBlock;
-					previousBlockY = yBlock;
-					drawBoard(-100, -100, currentTeam);
-				}
-				else if (changedY == 1) {
-					battleSystem.easyConsole(0, 3);
-					battleSystem.cmdCoutChessBoard();
-					previousBlockX = xBlock;
-					previousBlockY = yBlock;
-					drawBoard(-100, -100, currentTeam);
-				}
-				else if (changedY == -1) {
-					battleSystem.easyConsole(0, 9);
-					battleSystem.cmdCoutChessBoard();
-					previousBlockX = xBlock;
-					previousBlockY = yBlock;
-					drawBoard(-100, -100, currentTeam);
-				}
-			}
-			else if (changedX == -1) {
-				if (changedY == 0) {
-					battleSystem.easyConsole(0, 4);
-					battleSystem.cmdCoutChessBoard();
-					previousBlockX = xBlock;
-					previousBlockY = yBlock;
-					drawBoard(-100, -100, currentTeam);
-				}
-				else if (changedY == 1) {
-					battleSystem.easyConsole(0, 1);
-					battleSystem.cmdCoutChessBoard();
-					previousBlockX = xBlock;
-					previousBlockY = yBlock;
-					drawBoard(-100, -100, currentTeam);
-				}
-				else if (changedY == -1) {
-					battleSystem.easyConsole(0, 7);
-					battleSystem.cmdCoutChessBoard();
-					previousBlockX = xBlock;
-					previousBlockY = yBlock;
-					drawBoard(-100, -100, currentTeam);
+				else if (changedX == -1) {
+					if (changedY == 0) {
+						battleSystem.easyConsole(0, 4);
+						battleSystem.cmdCoutChessBoard();
+						previousBlockX = xBlock;
+						previousBlockY = yBlock;
+						drawBoard(-100, -100, currentTeam);
+					}
+					else if (changedY == 1) {
+						battleSystem.easyConsole(0, 1);
+						battleSystem.cmdCoutChessBoard();
+						previousBlockX = xBlock;
+						previousBlockY = yBlock;
+						drawBoard(-100, -100, currentTeam);
+					}
+					else if (changedY == -1) {
+						battleSystem.easyConsole(0, 7);
+						battleSystem.cmdCoutChessBoard();
+						previousBlockX = xBlock;
+						previousBlockY = yBlock;
+						drawBoard(-100, -100, currentTeam);
+					}
 				}
 			}
 		}
-	}
+		break;
+	case 2:
+		//远程攻击 逻辑即为一层一层向内部嵌套 即：首先判断该棋子是否可以远程攻击 之后显示该棋子可以远程攻击到的范围，之后捕获鼠标消息，并且判断是否点到了可以攻击的棋子
+		if (cb[previousBlockX][previousBlockY] == cb[battleSystem.getCurrentTurnCounterPointer()->getPosition().getX()][battleSystem.getCurrentTurnCounterPointer()->getPosition().getY()]) {
+			if (cb[previousBlockX][previousBlockY]->getType() == 2) {
+				for (int i = 0; i < 10; i++){
+					for (int j = 0; j < 10; j++) {
+						if (cb[i][j] != nullptr && vb[i][j] == 3 && cb[i][j]->getTeam() != currentTeam) {
+							drawFillCell(i, j, RED);
+						}
+					}
+				}
+				while (true) {
+					if (MouseHit()) {
+						MOUSEMSG remoteMessage;
+						remoteMessage = GetMouseMsg();
+						switch (remoteMessage.uMsg) {
+						case WM_LBUTTONDOWN:
+							int *temp2;
+							temp2 = pixelToCell(remoteMessage.x, remoteMessage.y);
+							if (temp2[0] >= X_START_LENGTH && temp[1] >= Y_START_LENGTH && temp[0] <= (X_START_LENGTH + 10 * DEFAULT_BLOCK_SIZE) && temp[1] <= (Y_START_LENGTH + 10 * DEFAULT_BLOCK_SIZE)) {
+								if (cb[temp2[0]][temp2[1]] != nullptr && vb[temp2[0]][temp2[1]] == 3 && cb[temp2[0]][temp2[1]]->getTeam() != currentTeam) {//此处判断逻辑与上面显示可攻击的位置类似
+									bool fireArea[10][10] = { {false} };
+									fireArea[temp2[0]][temp2[1]] = true;
+									battleSystem.easyConsole(1, 0, 1, fireArea);
+									currentTeam = battleSystem.getCurrentTurnCounterPointer()->getTeam();
+									drawBoard(previousBlockX, previousBlockY, currentTeam);
+								}
+							}
+							else {
+								drawBoard(previousBlockX, previousBlockY, currentTeam);
+							}
+							break;
+						default: 
+							drawBoard(previousBlockX,previousBlockY,currentTeam);
+							break;
+						}
+					}
+				}
+			}
+		}
+		break;
+	case 3:break;
+	case 4:
+		if (cb[previousBlockX][previousBlockY] == cb[battleSystem.getCurrentTurnCounterPointer()->getPosition().getX()][battleSystem.getCurrentTurnCounterPointer()->getPosition().getY()]) {
+			battleSystem.easyConsole(2);
+			drawBoard(-100, -100, currentTeam);
+		}
+		break;
+	case 99:break;
+	default: break;
+}
 	//这里是留给远程攻击用的
 /*	if ((cb[previousBlockX][previousBlockY] != nullptr) && (cb[xBlock][yBlock] != nullptr) && (abs(xBlock - previousBlockX) > 1) && (abs(yBlock - previousBlockY) > 1)) {
 		flag2 = true;
@@ -182,93 +236,108 @@ void Display::drawBoard(int ver, int hor, int currentTeam)
 		break;
 	}
 	//显示一个格子 表现一下当前的可操作棋子所在的格子
-	if ((cb[battleSystem.getCurrentTurnCounterPointer()->getPosition().getX()][battleSystem.getCurrentTurnCounterPointer()->getPosition().getY()] != nullptr) && (cb[battleSystem.getCurrentTurnCounterPointer()->getPosition().getX()][battleSystem.getCurrentTurnCounterPointer()->getPosition().getY()]->getTeam() == currentTeam)) {
+	if((cb[battleSystem.getCurrentTurnCounterPointer()->getPosition().getX()][battleSystem.getCurrentTurnCounterPointer()->getPosition().getY()] != nullptr) && (cb[battleSystem.getCurrentTurnCounterPointer()->getPosition().getX()][battleSystem.getCurrentTurnCounterPointer()->getPosition().getY()]->getTeam() != currentTeam)) {
+		Sleep(500);
+		cleardevice();
+		const TCHAR *x = "请换对手来操作，当换人后，请按任意键继续";
+		drawButton(0, 0, 1280, 960,x);
+		while (true) {
+			if (_kbhit()) {
+				int ch = _getch();
+				currentTeam = switchCurrentTeam(currentTeam);
+				drawBoard(previousBlockX,previousBlockY,currentTeam);
+			}
+		}
+	}else	if ((cb[battleSystem.getCurrentTurnCounterPointer()->getPosition().getX()][battleSystem.getCurrentTurnCounterPointer()->getPosition().getY()] != nullptr) && (cb[battleSystem.getCurrentTurnCounterPointer()->getPosition().getX()][battleSystem.getCurrentTurnCounterPointer()->getPosition().getY()]->getTeam() == currentTeam)) {
+		
 		drawFillCell(battleSystem.getCurrentTurnCounterPointer()->getPosition().getX(), battleSystem.getCurrentTurnCounterPointer()->getPosition().getY(),MAGENTA);
 	}
 	//显示当前棋子的可操控范围
-	if (xBlock >= 0 && yBlock >= 0 && xBlock <= 9 && yBlock <= 9 && cb[xBlock][yBlock] != nullptr && cb[xBlock][yBlock]->getTeam() == currentTeam) {
-		drawFillCell(xBlock, yBlock, YELLOW);
-		drawChessMenu(xBlock, yBlock,cb[xBlock][yBlock]);
+	if (xBlock >= 0 && yBlock >= 0 && xBlock <= 9 && yBlock <= 9 && cb[xBlock][yBlock] != nullptr) {
+		drawChessMenu(xBlock, yBlock, cb[xBlock][yBlock]);
 		drawMoveMenu();
-		//左上
-		if (xBlock - 1 >= 0 && yBlock - 1 >= 0 &&xBlock - 1 <= 9 && yBlock - 1 <= 9) {
-			if (cb[xBlock - 1][yBlock - 1] == nullptr) {
-				drawFillCell(xBlock - 1, yBlock - 1, GREEN);
+		if (cb[xBlock][yBlock] == cb[battleSystem.getCurrentTurnCounterPointer()->getPosition().getX()][battleSystem.getCurrentTurnCounterPointer()->getPosition().getY()] && cb[xBlock][yBlock]->getTeam() == currentTeam) {
+			drawFillCell(xBlock, yBlock, YELLOW);
+			//左上
+			if (xBlock - 1 >= 0 && yBlock - 1 >= 0 && xBlock - 1 <= 9 && yBlock - 1 <= 9) {
+				if (cb[xBlock - 1][yBlock - 1] == nullptr) {
+					drawFillCell(xBlock - 1, yBlock - 1, GREEN);
+				}
+				else if (cb[xBlock - 1][yBlock - 1] != nullptr && cb[xBlock - 1][yBlock - 1]->getTeam() != currentTeam) {
+					drawFillCell(xBlock - 1, yBlock - 1, RED);
+				}
+				else;
 			}
-			else if (cb[xBlock - 1][yBlock - 1] != nullptr && cb[xBlock - 1][yBlock - 1]->getTeam() != currentTeam) {
-				drawFillCell(xBlock - 1, yBlock - 1, RED);
+			//正上
+			if (xBlock >= 0 && yBlock - 1 >= 0 && xBlock <= 9 && yBlock - 1 <= 9) {
+				if (cb[xBlock][yBlock - 1] == nullptr) {
+					drawFillCell(xBlock, yBlock - 1, GREEN);
+				}
+				else if (cb[xBlock][yBlock - 1] != nullptr && cb[xBlock][yBlock - 1]->getTeam() != currentTeam) {
+					drawFillCell(xBlock, yBlock - 1, RED);
+				}
+				else;
 			}
-			else;
-		}
-		//正上
-		if (xBlock >= 0 && yBlock - 1 >= 0 && xBlock <= 9 && yBlock - 1 <= 9) {
-			if (cb[xBlock][yBlock - 1] == nullptr) {
-				drawFillCell(xBlock, yBlock - 1, GREEN);
+			//右上
+			if (xBlock + 1 >= 0 && yBlock - 1 >= 0 && xBlock + 1 <= 9 && yBlock - 1 <= 9) {
+				if (cb[xBlock + 1][yBlock - 1] == nullptr) {
+					drawFillCell(xBlock + 1, yBlock - 1, GREEN);
+				}
+				else if (cb[xBlock + 1][yBlock - 1] != nullptr && cb[xBlock + 1][yBlock - 1]->getTeam() != currentTeam) {
+					drawFillCell(xBlock + 1, yBlock - 1, RED);
+				}
+				else;
 			}
-			else if (cb[xBlock][yBlock - 1] != nullptr && cb[xBlock][yBlock - 1]->getTeam() != currentTeam) {
-				drawFillCell(xBlock, yBlock - 1, RED);
+			//正左
+			if (xBlock - 1 >= 0 && yBlock >= 0 && xBlock - 1 <= 9 && yBlock <= 9) {
+				if (cb[xBlock - 1][yBlock] == nullptr) {
+					drawFillCell(xBlock - 1, yBlock, GREEN);
+				}
+				else if (cb[xBlock - 1][yBlock] != nullptr && cb[xBlock - 1][yBlock]->getTeam() != currentTeam) {
+					drawFillCell(xBlock - 1, yBlock, RED);
+				}
+				else;
 			}
-			else;
-		}
-		//右上
-		if (xBlock + 1 >= 0 && yBlock - 1 >= 0&& xBlock + 1 <= 9 && yBlock - 1 <= 9) {
-			if (cb[xBlock + 1][yBlock - 1] == nullptr) {
-				drawFillCell(xBlock + 1, yBlock - 1, GREEN);
+			//正右
+			if (xBlock + 1 >= 0 && yBlock >= 0 && xBlock + 1 <= 9 && yBlock <= 9) {
+				if (cb[xBlock + 1][yBlock] == nullptr) {
+					drawFillCell(xBlock + 1, yBlock, GREEN);
+				}
+				else if (cb[xBlock + 1][yBlock] != nullptr && cb[xBlock + 1][yBlock]->getTeam() != currentTeam) {
+					drawFillCell(xBlock + 1, yBlock, RED);
+				}
+				else;
 			}
-			else if (cb[xBlock + 1][yBlock - 1] != nullptr && cb[xBlock + 1][yBlock - 1]->getTeam() != currentTeam) {
-				drawFillCell(xBlock + 1, yBlock - 1, RED);
+			//左下
+			if (xBlock - 1 >= 0 && yBlock + 1 >= 0 && xBlock - 1 <= 9 && yBlock + 1 <= 9) {
+				if (cb[xBlock - 1][yBlock + 1] == nullptr) {
+					drawFillCell(xBlock - 1, yBlock + 1, GREEN);
+				}
+				else if (cb[xBlock - 1][yBlock + 1] != nullptr && cb[xBlock - 1][yBlock + 1]->getTeam() != currentTeam) {
+					drawFillCell(xBlock - 1, yBlock + 1, RED);
+				}
+				else;
 			}
-			else;
-		}
-		//正左
-		if (xBlock - 1 >= 0 && yBlock >= 0&& xBlock - 1 <= 9 && yBlock <= 9) {
-			if (cb[xBlock - 1][yBlock] == nullptr) {
-				drawFillCell(xBlock - 1, yBlock, GREEN);
+			//正下
+			if (xBlock >= 0 && yBlock + 1 >= 0 && xBlock <= 9 && yBlock + 1 <= 9) {
+				if (cb[xBlock][yBlock + 1] == nullptr) {
+					drawFillCell(xBlock, yBlock + 1, GREEN);
+				}
+				else if (cb[xBlock][yBlock + 1] != nullptr && cb[xBlock][yBlock + 1]->getTeam() != currentTeam) {
+					drawFillCell(xBlock, yBlock + 1, RED);
+				}
+				else;
 			}
-			else if (cb[xBlock - 1][yBlock] != nullptr && cb[xBlock - 1][yBlock]->getTeam() != currentTeam) {
-				drawFillCell(xBlock - 1, yBlock, RED);
+			//右下
+			if (xBlock + 1 >= 0 && yBlock + 1 >= 0 && xBlock + 1 <= 9 && yBlock + 1 <= 9) {
+				if (cb[xBlock + 1][yBlock + 1] == nullptr) {
+					drawFillCell(xBlock + 1, yBlock + 1, GREEN);
+				}
+				else if (cb[xBlock + 1][yBlock + 1] != nullptr && cb[xBlock + 1][yBlock + 1]->getTeam() != currentTeam) {
+					drawFillCell(xBlock + 1, yBlock + 1, RED);
+				}
+				else;
 			}
-			else;
-		}
-		//正右
-		if (xBlock + 1 >= 0 && yBlock >= 0&& xBlock + 1 <= 9 && yBlock <= 9) {
-			if (cb[xBlock + 1][yBlock] == nullptr) {
-				drawFillCell(xBlock + 1, yBlock, GREEN);
-			}
-			else if (cb[xBlock + 1][yBlock] != nullptr && cb[xBlock + 1][yBlock]->getTeam() != currentTeam) {
-				drawFillCell(xBlock + 1, yBlock, RED);
-			}
-			else;
-		}
-		//左下
-		if (xBlock - 1 >= 0 && yBlock + 1 >= 0&& xBlock - 1 <= 9 && yBlock + 1 <= 9) {
-			if (cb[xBlock - 1][yBlock + 1] == nullptr) {
-				drawFillCell(xBlock - 1, yBlock + 1, GREEN);
-			}
-			else if (cb[xBlock - 1][yBlock + 1] != nullptr && cb[xBlock - 1][yBlock + 1]->getTeam() != currentTeam) {
-				drawFillCell(xBlock - 1, yBlock + 1, RED);
-			}
-			else;
-		}
-		//正下
-		if (xBlock >= 0 && yBlock + 1 >= 0&& xBlock <= 9 && yBlock + 1 <= 9) {
-			if (cb[xBlock][yBlock + 1] == nullptr) {
-				drawFillCell(xBlock, yBlock + 1, GREEN);
-			}
-			else if (cb[xBlock][yBlock + 1] != nullptr && cb[xBlock][yBlock + 1]->getTeam() != currentTeam) {
-				drawFillCell(xBlock, yBlock + 1, RED);
-			}
-			else;
-		}
-		//右下
-		if (xBlock + 1 >= 0 && yBlock + 1 >= 0&&xBlock + 1 <= 9 && yBlock + 1 <= 9) {
-			if (cb[xBlock + 1][yBlock + 1] == nullptr) {
-				drawFillCell(xBlock + 1, yBlock + 1, GREEN);
-			}
-			else if (cb[xBlock + 1][yBlock + 1] != nullptr && cb[xBlock + 1][yBlock + 1]->getTeam() != currentTeam) {
-				drawFillCell(xBlock + 1, yBlock + 1, RED);
-			}
-			else;
 		}
 	}
 	//监控键盘和鼠标
@@ -321,6 +390,11 @@ void Display::drawFillCircle(int i, int j, int R, int G, int B){
 	setrop2(R2_COPYPEN);
 	fillcircle((X_START_LENGTH + (i  * DEFAULT_BLOCK_SIZE) + 0.5*DEFAULT_BLOCK_SIZE), (Y_START_LENGTH + (j  * DEFAULT_BLOCK_SIZE) + 0.5*DEFAULT_BLOCK_SIZE), 0.5*DEFAULT_BLOCK_SIZE - COLOR_BLOCK_SHRINK_SIZE);
 }
+void Display::drawConcedeButton()
+{
+	const TCHAR *x = TEXT("投降");
+	drawButton(855, 765, 1250, 920,x);
+}
 int *Display::pixelToCell(int ver, int hor) {
 	int x = 0, y = 0;
 	int temp[2];
@@ -346,22 +420,38 @@ int *Display::pixelToCell(int ver, int hor) {
 }
 void Display::drawChessMenu(int x, int y,Mob *chess) {
 	drawButton(855, 75, 1250, 720);
-	const TCHAR *t1 = TEXT("行动");
-	const TCHAR *t2 = TEXT("攻击");
-	const TCHAR *t3 = TEXT("技能");
-	const TCHAR *t4 = TEXT("放弃本次行动");
-	drawButton(890, 250, 1210, 310, t1);
-	drawButton(890, 330, 1210, 390, t2);
-	drawButton(890, 410, 1210, 470, t3);
-	drawButton(890, 490, 1210, 550, t4);
 	gettextstyle(&f); //得到当前字体设置
-	TCHAR a[100],b[100],c[100],d[100],e[100]; //我觉得100够大了
+	TCHAR a[100],b[100],c[100],d[100],e[100],g[100],h[100]; //我觉得100够大了
 	Mob***cb = battleSystem.getChessBoard();
 	_stprintf_s(a, _T("NAME:%s"), cb[x][y]->getName());
 	_stprintf_s(b, _T("  ATK:%d"),cb[x][y]->getATK());
 	_stprintf_s(c, _T("  HP:%d"),cb[x][y]->getHP());            // ←输出一行加一行
 	_stprintf_s(d, _T("  DEF:%d"),cb[x][y]->getDEF());
 	_stprintf_s(e, _T("  TEAM:%d"),cb[x][y]->getTeam());
+	switch (cb[x][y]->getType()) {
+	case 1:
+		_stprintf_s(g, _T("  TYPE:近战型"));
+		break;
+	case 2:
+		_stprintf_s(g, _T("  TYPE:远程型"));
+		break;
+	default:
+		_stprintf_s(g, _T("  比起什么类型我更好奇你是如何碰到这个选项的"));
+		break;
+	}
+	if(cb[x][y]->getID()>0&& cb[x][y]->getID() < 21) {
+		_stprintf_s(h, _T("  RARITY:R"));
+	}
+	else if (cb[x][y]->getID() > 20 && cb[x][y]->getID() < 31) {
+		_stprintf_s(h, _T("  RARITY:SR"));
+	}
+	else if (cb[x][y]->getID() > 30 && cb[x][y]->getID() < 36) {
+		_stprintf_s(h, _T("  RARITY:UR"));
+	}
+	else {
+		_stprintf_s(h, _T("  比起稀有度我很好奇你是如何得到这个选项的"));
+	}
+	
 	settextcolor(BLACK);
 	f.lfHeight = 20;
 	f.lfWidth = 0;
@@ -373,12 +463,66 @@ void Display::drawChessMenu(int x, int y,Mob *chess) {
 	outtextxy(865, 90 + 2*ENTER_CHAR_SIZE, c);            //   ←同上
 	outtextxy(865, 90 + 3 * ENTER_CHAR_SIZE, d);
 	outtextxy(865, 90 + 4 * ENTER_CHAR_SIZE, e);
+	outtextxy(865, 90 + 5 * ENTER_CHAR_SIZE, g);
+	outtextxy(865, 90 + 6 * ENTER_CHAR_SIZE, h);
+	if (chess == cb[battleSystem.getCurrentTurnCounterPointer()->getPosition().getX()][battleSystem.getCurrentTurnCounterPointer()->getPosition().getY()]) {
+		const TCHAR *t1 = TEXT("攻击（远程棋子使用）");
+		const TCHAR *t2 = TEXT("技能");
+		const TCHAR *t3 = TEXT("放弃本次行动");
+		drawButton(890, 330, 1210, 390, t1);
+		drawButton(890, 410, 1210, 470, t2);
+		drawButton(890, 490, 1210, 550, t3);
+	}
+	else;
 }
 void Display::drawMoveMenu() {
-	setfillcolor(WHITE);//把。。。菜单涂掉。。。
-	fillrectangle(121, 766, 829, 919);
 	drawButton(120, 765, 830, 920);
-	outtextxy(125, 768, TEXT("aaa"));
+	RECT moveMenuRect{ 120,765,830,920 };
+    const TCHAR *currentName, *nextName;
+	currentName = battleSystem.getCurrentTurnCounterPointer()->getName();
+	if (battleSystem.getNextTurnCounterPointer()!= nullptr) {
+		nextName = battleSystem.getNextTurnCounterPointer()->getName();
+	}
+	else {
+		nextName = battleSystem.getHeadTurnCounterPointer()->getName();
+	}
+	char* tempK = const_cast<char*>("当前操作棋子：");
+	char head[200];
+	strcpy(head, tempK);
+    char* second = const_cast<char*>(currentName);
+	char* third = const_cast<char*>("     ");
+	char* fourth = const_cast<char*>("下一个操作的棋子：");
+	char* fifth;
+	if (battleSystem.getNextTurnCounterPointer() != nullptr) {
+		if (battleSystem.getNextTurnCounterPointer()->getTeam() == battleSystem.getCurrentTurnCounterPointer()->getTeam()) {
+			fifth = const_cast<char*>(nextName);
+		}
+		else {
+			fifth = const_cast<char*>("（敌方棋子，不可查看）");
+		}
+	}
+	else {
+		if (battleSystem.getHeadTurnCounterPointer()->getTeam() == battleSystem.getCurrentTurnCounterPointer()->getTeam()) {
+			fifth = const_cast<char*>(nextName);
+		}
+		else {
+			fifth = const_cast<char*>("（敌方棋子，不可查看）");
+		}
+	}
+	strcat(head, second);
+	strcat(head, third);
+	strcat(head, fourth);
+	strcat(head, fifth);
+	TCHAR *totalString = new TCHAR[200];
+	strcpy(totalString, head);
+	gettextstyle(&f); //得到当前字体设置
+	settextcolor(BLACK);
+	f.lfHeight = 15;
+	f.lfWidth = 0;
+	f.lfQuality = PROOF_QUALITY;
+	_tcscpy_s(f.lfFaceName, _T("黑体"));
+	settextstyle(&f);
+	drawtext(totalString, &moveMenuRect, DT_VCENTER | DT_CENTER | DT_SINGLELINE);
 }
 void Display::drawButton(int a, int b, int c, int d,const TCHAR *x){
 	RECT buttonRect = { a,b,c,d };
@@ -392,6 +536,33 @@ void Display::drawButton(int a, int b, int c, int d,const TCHAR *x){
 	_tcscpy_s(f.lfFaceName, _T("黑体"));
 	settextstyle(&f);
 	drawtext(x,&buttonRect,DT_CENTER|DT_VCENTER|DT_SINGLELINE);
+}
+int Display::mouseMonitor(int x, int y)
+{
+	if ((x >= X_START_LENGTH) && (y >= Y_START_LENGTH) && (x <= X_START_LENGTH + 10 * DEFAULT_BLOCK_SIZE) && (y <= Y_START_LENGTH + 10 * DEFAULT_BLOCK_SIZE)) {
+		//点到了棋盘内 返回1
+		return 1;
+	}
+	else if (x >= 890 && y >= 330 && x <= 1210 && y <= 390) {
+		//点到了右菜单第一个按钮
+		return 2;
+	}
+	else if (x >= 890 && y >= 410 && x <= 1210 && y <= 470) {
+		//点到了右菜单第二个按钮
+		return 3;
+	}
+	else if (x >= 890 && y >= 490 && x <= 1210 && y <= 550) {
+		//点到了右菜单第三个按钮 
+		return 4;
+	}
+	else if (x >= 855 && y >= 765 && x <= 1250 && y <= 920) {
+		//点到了投降（
+		return 99;
+	}
+	else if (x < 0 && y < 0) {
+		//您这单纯的就是什么都没发生
+		return 0;
+	}
 }
 int Display::switchCurrentTeam(int currentTeam)
 {

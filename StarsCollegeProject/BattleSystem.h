@@ -6,6 +6,7 @@
 #define SUPERCHAT_BATTLESYSTEM_H
 
 #include <list>
+#include <vector>
 #include <algorithm>
 //监管战斗的核心类 仅会实例化出一个全局对象 并接手所有棋子的交互过程
 class Mob;
@@ -28,13 +29,14 @@ protected:
     Mob* ** chessBoard;//棋盘数组 每个位置会有一个指向棋子的指针 若该处nullptr 则为空
     Mob* ** tempBoard;//缓存用数组 用以刷新等状态下的缓存
     int** visibleBoard;//可见点的数组表示 1为1号队伍可见 2为二号队伍可见 0为均不可见 3为均可见（或许没有存在的必要）
-    bool** helpOperateor;//辅助的操作板 相当于内置了一个输入坐标即可标记坐标的
+    int** chessOfTeam1;//1队棋子数组 0位记录选择的数量 1位记录已使用的数量
+    int** chessOfTeam2;//2队棋子数组 0位记录选择的数量 1位记录已使用的数量
 
     //全局数据统计
     int rounds;//回合数 某方完全行动一轮为一回合 默认奇数为team1 偶数为team2
     int totalTurns;//全局记录行动次数 用以传递给技能系统 每进行一次操作++一次 全局存储
     int tempTurns;//每回合中的缓存 进入下一回合时会被清0
-    int destoryMobs;//记录全局被破坏的棋子数量
+    int destroyedMobs;//记录全局被破坏的棋子数量
 
     //行动列表
     std::list<TurnNode> TurnCounter;//列表 用以初始化过程队列
@@ -50,6 +52,12 @@ protected:
     void iterTCpp();//easyConsole后的迭代器操作集成
     int setChess(int x,int y,Mob* target);//放置棋子 不通过这个方式放置的棋子将不会显示在棋盘上 即该方法将棋子置入监管区
 public:
+    int chooseChess(int ID,int Team);//传入ID Team 返回剩余可选数量 操作为在数组中添加对应ID的棋子 若该棋子数量为3 返回-1
+    int removeChess(int ID,int Team);//传入ID Team 返回剩余可选数量 操作为在数组中移除对应ID的棋子 若该棋子数量为0 返回-1
+    int** getChessOfTeam(int Team);//返回队伍棋子数组
+    int getRemainingVacancy(int Team);//返回剩余可选数量
+    int getRemainingChess(int Team);//返回剩余可用棋子数量
+
     int** getVisibleBoard();
     Mob* ** getChessBoard();//返回棋子/技能系统用以进行交互前牌判断的完整棋盘
     //得到的是指向（包含着棋子指针的）二维数组的指针 直接使用[][]就能得到Mob* 之后->调用即可
@@ -73,7 +81,7 @@ public:
     //返回当前计数器迭代器指向的棋子
     Mob* getNextTurnCounterPointer();
    //返回下一项迭代器指向的棋子
-
+	Mob* getHeadTurnCounterPointer();
     /*简易控制台：
      *  实现内容：
      *      1.行动    Code0:0 Code1:toward ,Code1==0时 读取operateChessArea 调用GodMove
@@ -85,8 +93,28 @@ public:
     /*注意 即使code1要设置成0 也请显示输入 因为缺省只接受从左往右的依次缺省*/
     int easyConsole(int operateCode0,int operateCode1 = 0,int operateCode2 = 0,bool operateChessArea[10][10] = nullptr);
 
+    void cmdCoutChessOfTeam(int Team = 0);//调试用 输出各个队伍有的棋子数量
     void cmdCoutChessBoard();//调试用 输出棋盘上棋子的位置 该数字代表的为其队伍编号
     void cmdCoutTurnCounter();//调试用 输出行动力列表的数据 格式为 Mob*:flag
+};
+
+//用以承载冷却计数的节点
+class CoolingNode{
+protected:
+    int skillID;
+    Mob* skillFrom;
+    int coolingCounter;
+public:
+    explicit CoolingNode(Mob* target,int ID);
+    CoolingNode(CoolingNode &C);
+};
+//这里设计所有的技能 并且给其对应的唯一编号
+//在mob中技能以编号形式被赋予各个棋子 也会以编号形式被调用
+class SkillSystem {
+protected:
+    std::vector<CoolingNode> SkillCoolingCounter;
+public:
+    int getDefaultCoolingCounter(int ID);//根据指定ID获取对应技能的冷却值
 };
 
 #endif //SUPERCHAT_BATTLESYSTEM_H

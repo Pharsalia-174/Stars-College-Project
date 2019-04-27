@@ -27,9 +27,6 @@
     <ClInclude Include="Point.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SkillSystem.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="SpecificChess.h">
       <Filter>头文件</Filter>
     </ClInclude>
